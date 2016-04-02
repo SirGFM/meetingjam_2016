@@ -117,6 +117,16 @@ gfmRV collision_run() {
                     rv = __floor_cow();
                 }
             } break;
+            case T_CLOUD | (T_COW << 16):
+            case T_CLOUD | (T_CLOUD << 16):
+            case T_CLOUD | (T_BULLET << 16):
+            case T_COW | (T_CLOUD << 16):
+            case T_BULLET | (T_CLOUD << 16):
+            case T_BULLET | (T_COW << 16):
+            case T_COW | (T_BULLET << 16):
+            case T_BULLET | (T_FLOOR << 16):
+            case T_FLOOR | (T_BULLET << 16):
+                { /* Ignore collisiong */ } break;
             /* On Linux, a SIGINT is raised any time a unhandled collision
              * happens. When debugging, GDB will stop here and allow the user to
              * check which types weren't handled */

@@ -210,6 +210,7 @@ struct stGlobalCtx {
     int grassCounter;
     int laserTime;
     int cloudTime;
+    int cooldown;
 };
 
 #endif /* __GAME_CTX_H__ */

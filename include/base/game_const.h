@@ -94,11 +94,21 @@
 #define CLOUD_W 32
 #define CLOUD_H 16
 #define CLOUD_FRAME 40
-#define CLOUD_NEXTTIME 1000
+#define CLOUD_NEXTTIME 750
 #define CLOUD_NEXTTIMEMOD 125
 #define CLOUD_NEXTTIMEMUL 8
 #define CLOUD_VX 24
 #define CLOUD_VXMOD 24
+
+#define BUL_DX 4
+#define BUL_DY -1
+#define BUL_W 4
+#define BUL_H 4
+#define BUL_OX -2
+#define BUL_OY -2
+#define BUL_FRAME 324
+#define BUL_VX 32
+#define BUL_COOLDOWN 300
 
 #endif /* __GAME_CONST_H__ */
 

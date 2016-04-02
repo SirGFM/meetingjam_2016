@@ -94,6 +94,7 @@ gfmRV menu_clean() {
 gfmRV menu_update() {
     gfmRV rv;
 
+    /*PARTICLES*/
     if (pGlobal->cloudTime <= 0) {
         gfmSprite *pCloud;
         int y;
@@ -117,9 +118,47 @@ gfmRV menu_update() {
     }
     pGlobal->cloudTime -= pGame->elapsed;
 
-    rv = gfmSprite_update(pGlobal->pCow, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
+    if (pGlobal->laserTime > 0  && pGlobal->cooldown <= 0 &&
+                (pButton->act.state & gfmInput_pressed)) {
+        gfmSprite *pBullet;
+        int flipped, vx, x, y;
+
+        pBullet = 0;
+        rv = gfmGroup_recycle(&pBullet, pGlobal->pParticles);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        rv = gfmSprite_getDirection(&flipped, pGlobal->pCow);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_getCenter(&x, &y, pGlobal->pCow);
+        ASSERT(rv == GFMRV_OK, rv);
+        if (!flipped) {
+            x += BUL_DX;
+            y += BUL_DY;
+            vx = BUL_VX;
+        }
+        else {
+            x -= BUL_DX;
+            y -= BUL_DY;
+            vx = -BUL_VX;
+        }
+
+        rv = gfmSprite_init(pBullet, x, y, BUL_W, BUL_H, pGfx->pSset8x8, BUL_OX,
+                BUL_OY, 0, T_BULLET);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setFrame(pBullet, BUL_FRAME);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setVelocity(pBullet, vx, 0/*vy*/);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        pGlobal->cooldown += BUL_COOLDOWN;
+    }
+    if (pGlobal->cooldown > 0) {
+        pGlobal->cooldown -= pGame->elapsed;
+    }
     rv = gfmGroup_update(pGlobal->pParticles, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = gfmSprite_update(pGlobal->pCow, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
     rv = gfmQuadtree_initRoot(pGlobal->pQt, -8, -8, MAP_W, MAP_H, QT_MAX_DEPTH,
@@ -133,6 +172,12 @@ gfmRV menu_update() {
         rv = collision_run();
         ASSERT(rv == GFMRV_OK, rv);
     }
+    rv = gfmQuadtree_collideGroup(pGlobal->pQt, pGlobal->pParticles);
+    ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);
+    if (rv == GFMRV_QUADTREE_OVERLAPED) {
+        rv = collision_run();
+        ASSERT(rv == GFMRV_OK, rv);
+    }
 
     rv = GFMRV_OK;
 __ret:
@@ -141,11 +186,24 @@ __ret:
 
 gfmRV menu_draw() {
     gfmRV rv;
+    int frame;
 
     rv = gfm_drawTile(pGame->pCtx, pGfx->pSset64x16, 0, FLOOR_Y, FLOOR_FRAME, 0);
     ASSERT(rv == GFMRV_OK, rv);
+
+    if (pGlobal->laserTime > 0) {
+        rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setFrame(pGlobal->pCow, frame | 1);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
     rv = gfmSprite_draw(pGlobal->pCow, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+    if (pGlobal->laserTime > 0) {
+        rv = gfmSprite_setFrame(pGlobal->pCow, frame | 1);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
     rv = gfmGroup_draw(pGlobal->pParticles, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 

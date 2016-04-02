@@ -247,7 +247,9 @@ int main(int argc, char *argv[]) {
     /* Set the initial state */
     pGame->nextState = ST_MENUSTATE;
     /* Set debug mode to running instead of stepping */
+#if defined(DEBUG)
     pGame->flags |= GAME_RUN;
+#endif
 
     /* Initialize the main loop */
     rv = main_loop();
