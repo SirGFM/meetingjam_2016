@@ -108,7 +108,7 @@
 #define BUL_OY -2
 #define BUL_FRAME 324
 #define BUL_VX 32
-#define BUL_COOLDOWN 300
+#define BUL_COOLDOWN 66
 
 #endif /* __GAME_CONST_H__ */
 

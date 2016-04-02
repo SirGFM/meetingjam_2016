@@ -118,7 +118,7 @@ gfmRV menu_update() {
     }
     pGlobal->cloudTime -= pGame->elapsed;
 
-    if (pGlobal->laserTime > 0  && pGlobal->cooldown <= 0 &&
+    if (pGlobal->laserTime >= 0  && pGlobal->cooldown <= 0 &&
                 (pButton->act.state & gfmInput_pressed)) {
         gfmSprite *pBullet;
         int flipped, vx, x, y;
