@@ -76,6 +76,14 @@ gfmRV main_loop() {
 #else
         while (gfm_isUpdating(pGame->pCtx) == GFMRV_TRUE) {
 #endif
+            gfmCamera *pCam;
+
+            pCam = 0;
+            rv = gfm_getCamera(&pCam, pGame->pCtx);
+            ASSERT(rv == GFMRV_OK, rv);
+            rv = gfmCamera_getPosition(&(pGame->camX), &(pGame->camY), pCam);
+            ASSERT(rv == GFMRV_OK, rv);
+
             rv = gfm_fpsCounterUpdateBegin(pGame->pCtx);
             ASSERT(rv == GFMRV_OK, rv);
 

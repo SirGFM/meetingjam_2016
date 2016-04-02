@@ -134,7 +134,10 @@ gfmRV input_init() {
     ADD_KEY(dbgPause);
     ADD_KEY(dbgStep);
 #endif
-    /* TODO Add other keys */
+    ADD_KEY(left);
+    ADD_KEY(right);
+    ADD_KEY(jump);
+    ADD_KEY(act);
 
 #undef ADD_KEY
 
@@ -152,7 +155,23 @@ gfmRV input_init() {
     BIND_KEY(dbgPause, gfmKey_f5);
     BIND_KEY(dbgStep, gfmKey_f6);
 #endif
-    /* TODO Bind other keys */
+    BIND_KEY(left, gfmKey_left);
+    BIND_KEY(left, gfmKey_a);
+    BIND_GAMEPAD_BT(left, gfmController_left, 0/*port*/);
+    BIND_GAMEPAD_BT(left, gfmController_laxis_left, 0/*port*/);
+    BIND_KEY(right, gfmKey_right);
+    BIND_KEY(right, gfmKey_d);
+    BIND_GAMEPAD_BT(right, gfmController_right, 0/*port*/);
+    BIND_GAMEPAD_BT(right, gfmController_laxis_right, 0/*port*/);
+    BIND_KEY(jump, gfmKey_up);
+    BIND_KEY(jump, gfmKey_w);
+    BIND_KEY(jump, gfmKey_j);
+    BIND_KEY(jump, gfmKey_x);
+    BIND_GAMEPAD_BT(jump, gfmController_a, 0/*port*/);
+    BIND_KEY(act, gfmKey_space);
+    BIND_KEY(act, gfmKey_k);
+    BIND_KEY(act, gfmKey_c);
+    BIND_GAMEPAD_BT(act, gfmController_b, 0/*port*/);
 
 #undef BIND_KEY
 

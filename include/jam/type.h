@@ -22,6 +22,7 @@
 #define T_NBITS 5
 
 enum enType {
+    T_CLOUD   = gfmType_reserved_4,
     /* Base type for collideables that doesn't hurt nor move (e.g., floor) */
     T_FLOOR   = gfmType_reserved_4,
     /* Base type for hitbox objects (i.e., bullets, slashes, etc) */

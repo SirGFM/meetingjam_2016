@@ -116,6 +116,8 @@ struct stGameCtx {
     state nextState;
     /** Time elapsed since the previous frame, in miliseconds */
     int elapsed;
+    int camX;
+    int camY;
 };
 
 /** Store all handles to texture and spritesets' pointers */
@@ -125,6 +127,7 @@ struct stGfxCtx {
     gfmSpriteset *pSset8x16;
     gfmSpriteset *pSset16x16;
     gfmSpriteset *pSset32x8;
+    gfmSpriteset *pSset32x16;
     gfmSpriteset *pSset64x16;
     /** Handle of the main texture atlas */
     int texHandle;
@@ -159,7 +162,10 @@ struct stButtonCtx {
     /** Update a single frame and pause */
     button dbgStep;
 #endif
-    /* TODO Add buttons */
+    button left;
+    button right;
+    button jump;
+    button act;
 };
 
 /** Store all data modifiably on the option menu, as well as anything that may
@@ -201,6 +207,9 @@ struct stGlobalCtx {
     gfmGenArr_var(gfmSprite, pAliens);
     struct counter grassCount;
     struct counter alienCount;
+    int grassCounter;
+    int laserTime;
+    int cloudTime;
 };
 
 #endif /* __GAME_CTX_H__ */

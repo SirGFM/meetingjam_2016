@@ -11,7 +11,7 @@
 #include <jam/type.h>
 
 enum cowAnim {
-    COW_STAND_0,
+    COW_STAND_0 = 0,
     COW_STAND_1,
     COW_STAND_2,
     COW_STAND_3,
@@ -58,6 +58,30 @@ gfmRV menu_init() {
     rv = gfmSprite_setFrame(pGlobal->pFloor, FLOOR_FRAME);
     ASSERT(rv == GFMRV_OK, rv);
 
+    /*PARTICLES*/
+    rv = gfmGroup_setDefType(pGlobal->pParticles, T_CLOUD);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefSpriteset(pGlobal->pParticles, pGfx->pSset8x8);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefDimensions(pGlobal->pParticles, 4/*w*/, 4/*h*/, 0/*ox*/,
+            0/*oy*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefVelocity(pGlobal->pParticles, 0/*vx*/, 0/*vy*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefAcceleration(pGlobal->pParticles, 0/*ax*/, 0/*ay*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDeathOnLeave(pGlobal->pParticles, 0/*doDie*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDeathOnTime(pGlobal->pParticles, PART_TTL);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_preCache(pGlobal->pParticles, PART_CACHE, PART_CACHE);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDrawOrder(pGlobal->pParticles, gfmDrawOrder_newestFirst);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setCollisionQuality(pGlobal->pParticles,
+            gfmCollisionQuality_visibleOnly);
+    ASSERT(rv == GFMRV_OK, rv);
+
     rv = GFMRV_OK;
 __ret:
     return rv;
@@ -70,7 +94,32 @@ gfmRV menu_clean() {
 gfmRV menu_update() {
     gfmRV rv;
 
+    if (pGlobal->cloudTime <= 0) {
+        gfmSprite *pCloud;
+        int y;
+
+        pCloud = 0;
+        rv = gfmGroup_recycle(&pCloud, pGlobal->pParticles);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        y = 13 + (rand() % 8);
+        rv = gfmSprite_init(pCloud, pGame->camX + V_WIDTH, y, CLOUD_W, CLOUD_H,
+            pGfx->pSset32x16, 0/*ox*/, 0/*oy*/, 0, T_CLOUD);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setFrame(pCloud, CLOUD_FRAME);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setVelocity(pCloud, -(CLOUD_VX + (rand() % CLOUD_VXMOD)),
+                0/*vy*/);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        pGlobal->cloudTime += CLOUD_NEXTTIME;
+        pGlobal->cloudTime += (rand() % CLOUD_NEXTTIMEMUL) * CLOUD_NEXTTIMEMOD;
+    }
+    pGlobal->cloudTime -= pGame->elapsed;
+
     rv = gfmSprite_update(pGlobal->pCow, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_update(pGlobal->pParticles, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
     rv = gfmQuadtree_initRoot(pGlobal->pQt, -8, -8, MAP_W, MAP_H, QT_MAX_DEPTH,
@@ -93,14 +142,15 @@ __ret:
 gfmRV menu_draw() {
     gfmRV rv;
 
-    rv = gfmSprite_draw(pGlobal->pFloor, pGame->pCtx);
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset64x16, 0, FLOOR_Y, FLOOR_FRAME, 0);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_draw(pGlobal->pCow, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_draw(pGlobal->pParticles, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
     return rv;
 }
-
 

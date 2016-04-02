@@ -88,5 +88,17 @@
 #define FLOOR_OY 0
 #define FLOOR_FRAME 24
 
+#define PART_CACHE 256
+#define PART_TTL 5000
+
+#define CLOUD_W 32
+#define CLOUD_H 16
+#define CLOUD_FRAME 40
+#define CLOUD_NEXTTIME 1000
+#define CLOUD_NEXTTIMEMOD 125
+#define CLOUD_NEXTTIMEMUL 8
+#define CLOUD_VX 24
+#define CLOUD_VXMOD 24
+
 #endif /* __GAME_CONST_H__ */
 
