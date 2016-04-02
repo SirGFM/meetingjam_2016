@@ -211,6 +211,7 @@ struct stGlobalCtx {
     int laserTime;
     int cloudTime;
     int cooldown;
+    int cowAnim;
 };
 
 #endif /* __GAME_CTX_H__ */

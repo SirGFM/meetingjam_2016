@@ -22,16 +22,16 @@ enum cowAnim {
     COW_HIT,
 };
 int pCowAnimData[] = {
-           /*len|fps|loop|data */
-/*COW_STAND_0*/1, 0 ,  0 ,16,
+            /*len|fps|loop|data */
+/*COW_STAND_0*/ 1, 0 ,  0 ,16,
 /*COW_STAND_1*/4, 12,  1 ,16,18,19,18,
-/*COW_STAND_2*/4, 12,  1 ,20,18,19,18,
-/*COW_STAND_3*/4, 12,  1 ,21,18,19,18,
-/*COW_RUN    */2, 4 ,  1 ,22,24,
-/*COW_JUMP   */1, 0 ,  0 ,22,
-/*COW_FALL   */1, 0 ,  0 ,24,
-/*COW_EAT    */3, 1 ,  0 ,25,26,25,
-/*COW_HIT    */1, 0 ,  0 ,27
+/*COW_STAND_2*/12, 12,  1 ,16,18,19,18,16,18,19,18,20,18,19,18,
+/*COW_STAND_3*/12, 12,  1 ,16,18,19,18,16,18,19,18,21,18,19,18,
+/*COW_RUN    */ 2, 4 ,  1 ,22,24,
+/*COW_JUMP   */ 1, 0 ,  0 ,29,
+/*COW_FALL   */ 1, 0 ,  0 ,30,
+/*COW_EAT    */ 3, 1 ,  0 ,26,27,26,
+/*COW_HIT    */ 1, 0 ,  0 ,28
 };
 int cowAnimDataLen = sizeof(pCowAnimData) / sizeof(int);
 
@@ -92,7 +92,11 @@ gfmRV menu_clean() {
 }
 
 gfmRV menu_update() {
+    double vx, vy;
     gfmRV rv;
+    gfmCollision dir;
+
+    /* == UPDATE ================== */
 
     /*PARTICLES*/
     if (pGlobal->cloudTime <= 0) {
@@ -118,7 +122,7 @@ gfmRV menu_update() {
     }
     pGlobal->cloudTime -= pGame->elapsed;
 
-    if (pGlobal->laserTime >= 0  && pGlobal->cooldown <= 0 &&
+    if (pGlobal->laserTime > 0  && pGlobal->cooldown <= 0 &&
                 (pButton->act.state & gfmInput_pressed)) {
         gfmSprite *pBullet;
         int flipped, vx, x, y;
@@ -158,8 +162,27 @@ gfmRV menu_update() {
     rv = gfmGroup_update(pGlobal->pParticles, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
+    /*COW*/
     rv = gfmSprite_update(pGlobal->pCow, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+    if (pButton->left.state & gfmInput_pressed) {
+        rv = gfmSprite_setHorizontalVelocity(pGlobal->pCow, -COW_VX);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setDirection(pGlobal->pCow, 1/*flipped*/);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    else if (pButton->right.state & gfmInput_pressed) {
+        rv = gfmSprite_setHorizontalVelocity(pGlobal->pCow, COW_VX);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setDirection(pGlobal->pCow, 0/*flipped*/);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    else {
+        rv = gfmSprite_setHorizontalVelocity(pGlobal->pCow, 0);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
+    /* == COLLISION =============== */
 
     rv = gfmQuadtree_initRoot(pGlobal->pQt, -8, -8, MAP_W, MAP_H, QT_MAX_DEPTH,
             QT_MAX_NODES);
@@ -177,6 +200,59 @@ gfmRV menu_update() {
     if (rv == GFMRV_QUADTREE_OVERLAPED) {
         rv = collision_run();
         ASSERT(rv == GFMRV_OK, rv);
+    }
+
+    /* == POST ========================= */
+
+    /*COW*/
+    rv = gfmSprite_getCollision(&dir, pGlobal->pCow);
+    ASSERT(rv == GFMRV_OK, rv);
+    if ((dir & gfmCollision_down) &&
+            (pButton->jump.state & gfmInput_justPressed) ==
+            gfmInput_justPressed) {
+        rv = gfmSprite_setVerticalVelocity(pGlobal->pCow, COW_JUMPVY);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    rv = gfmSprite_getVelocity(&vx, &vy, pGlobal->pCow);
+    ASSERT(rv == GFMRV_OK, rv);
+    if (vy < 0) {
+        rv = gfmSprite_playAnimation(pGlobal->pCow, COW_JUMP);
+        ASSERT(rv == GFMRV_OK, rv);
+        pGlobal->cowAnim = COW_JUMP;
+    }
+    else if (vy > 0) {
+        rv = gfmSprite_playAnimation(pGlobal->pCow, COW_FALL);
+        ASSERT(rv == GFMRV_OK, rv);
+        pGlobal->cowAnim = COW_FALL;
+    }
+    /* TODO HIT */
+    else if (!(dir & gfmCollision_down)) {
+        /* Filter any other animation */
+    }
+    else if (vx != 0) {
+        rv = gfmSprite_playAnimation(pGlobal->pCow, COW_RUN);
+        ASSERT(rv == GFMRV_OK, rv);
+        pGlobal->cowAnim = COW_RUN;
+    }
+    /* TODO EAT */
+    else if (pGlobal->laserTime > 0) {
+        /* Force non-animated stand if shooting */
+        rv = gfmSprite_playAnimation(pGlobal->pCow, COW_STAND_0);
+        ASSERT(rv == GFMRV_OK, rv);
+        pGlobal->cowAnim = COW_STAND_0;
+    }
+    else {
+        int anim;
+
+        if (pGlobal->cowAnim != COW_STAND_1 &&
+                pGlobal->cowAnim != COW_STAND_2 &&
+                pGlobal->cowAnim != COW_STAND_3) {
+            anim = COW_STAND_1 + (rand() % 3);
+            rv = gfmSprite_playAnimation(pGlobal->pCow, anim);
+            ASSERT(rv == GFMRV_OK, rv);
+
+            pGlobal->cowAnim = anim;
+        }
     }
 
     rv = GFMRV_OK;

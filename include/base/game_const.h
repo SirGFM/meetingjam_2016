@@ -79,6 +79,8 @@
 #define GRAV 500
 #define MAP_W 160
 #define MAP_H 64
+#define COW_VX 24
+#define COW_JUMPVY -150
 
 #define FLOOR_X 0
 #define FLOOR_Y 48
