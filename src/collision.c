@@ -4,6 +4,7 @@
  * @file src/collision.c
  */
 #include <base/collision.h>
+#include <base/game_const.h>
 #include <base/game_ctx.h>
 
 #include <GFraMe/gfmAssert.h>
@@ -92,7 +93,7 @@ gfmRV collision_run() {
         /** gfmObjects children (if any) */
         void *pChild1, *pChild2;
         int type1, type2;
-        int orType;
+        int orType, isGrass1;
 
         /* Retrieve the two overlaping objects and their types */
         rv = gfmQuadtree_getOverlaping(&pObj1, &pObj2, pGlobal->pQt);
@@ -108,6 +109,7 @@ gfmRV collision_run() {
 
         /* Handle the collision */
         rv = GFMRV_OK;
+        isGrass1 = 0;
         switch (orType) {
             /* e.g.: Handle collision between A and B the same as A and C */
             case T_COW | (T_FLOOR << 16):
@@ -116,6 +118,31 @@ gfmRV collision_run() {
                 if (rv == GFMRV_TRUE) {
                     rv = __floor_cow();
                 }
+            } break;
+            case T_GRASS | (T_EAT << 16):
+                isGrass1 = 1;
+            case T_EAT | (T_GRASS << 16): {
+                int frame;
+                gfmSprite *pGrass;
+
+                if (isGrass1) {
+                    pGrass = (gfmSprite*)pChild1;
+                }
+                else {
+                    pGrass = (gfmSprite*)pChild2;
+                }
+
+                rv = gfmSprite_getFrame(&frame, pGrass);
+                ASSERT(rv == GFMRV_OK, rv);
+                if (frame == GRASS_FRAME0 + GRASS_NUMFRAMES - 1) {
+                    pGlobal->grassCounter++;
+                }
+                if (frame != GRASS_FRAME0 + GRASS_NUMFRAMES) {
+                    frame++;
+                    rv = gfmSprite_setFrame(pGrass, frame);
+                    ASSERT(rv == GFMRV_OK, rv);
+                }
+                rv = GFMRV_OK;
             } break;
             case T_CLOUD | (T_COW << 16):
             case T_CLOUD | (T_CLOUD << 16):
@@ -133,6 +160,14 @@ gfmRV collision_run() {
             case T_EAT | (T_COW << 16):
             case T_BULLET | (T_EAT << 16):
             case T_EAT | (T_BULLET << 16):
+            case T_GRASS | (T_FLOOR << 16):
+            case T_FLOOR | (T_GRASS << 16):
+            case T_GRASS | (T_COW << 16):
+            case T_COW | (T_GRASS << 16):
+            case T_GRASS | (T_BULLET << 16):
+            case T_BULLET | (T_GRASS << 16):
+            case T_GRASS | (T_ALIEN << 16):
+            case T_ALIEN | (T_GRASS << 16):
                 { /* Ignore collisiong */ } break;
             /* On Linux, a SIGINT is raised any time a unhandled collision
              * happens. When debugging, GDB will stop here and allow the user to

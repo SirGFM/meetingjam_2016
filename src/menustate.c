@@ -30,13 +30,15 @@ int pCowAnimData[] = {
 /*COW_RUN    */ 2, 4 ,  1 ,22,24,
 /*COW_JUMP   */ 1, 0 ,  0 ,29,
 /*COW_FALL   */ 1, 0 ,  0 ,30,
-/*COW_EAT    */ 3, 2 ,  0 ,26,27,26,
+/*COW_EAT    */ 3, 3 ,  0 ,26,27,26,
 /*COW_HIT    */ 1, 0 ,  0 ,28
 };
 int cowAnimDataLen = sizeof(pCowAnimData) / sizeof(int);
 
 gfmRV menu_init() {
     gfmRV rv;
+
+    pGlobal->hearts = UI_NUM_HEARTS;
 
     rv = gfmCamera_setWorldDimensions(pGame->pCam, MAP_W, MAP_H);
     ASSERT(rv == GFMRV_OK, rv);
@@ -175,7 +177,11 @@ gfmRV menu_update() {
     /*COW*/
     rv = gfmSprite_update(pGlobal->pCow, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
-    if (pButton->left.state & gfmInput_pressed) {
+    if (pGlobal->cowAnim == COW_EAT) {
+        rv = gfmSprite_setHorizontalVelocity(pGlobal->pCow, 0);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    else if (pButton->left.state & gfmInput_pressed) {
         rv = gfmSprite_setHorizontalVelocity(pGlobal->pCow, -COW_VX);
         ASSERT(rv == GFMRV_OK, rv);
         rv = gfmSprite_setDirection(pGlobal->pCow, 1/*flipped*/);
@@ -309,9 +315,10 @@ __ret:
 
 gfmRV menu_draw() {
     gfmRV rv;
-    int frame;
+    int frame, i, x;
 
-    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset64x16, 0, FLOOR_Y, FLOOR_FRAME, 0);
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset64x16, 0/*x*/, FLOOR_Y,
+            FLOOR_FRAME, 0/*flip*/);
     ASSERT(rv == GFMRV_OK, rv);
 
     if (pGlobal->laserTime > 0) {
@@ -329,6 +336,27 @@ gfmRV menu_draw() {
 
     rv = gfmGroup_draw(pGlobal->pParticles, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+
+    /*UI*/
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset32x8, 0/*x*/, UI_GRASS_BAR_Y,
+            UI_GRASS_BAR_FRAME0 + pGlobal->grassCounter, 0/*flip*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    i = 0;
+    x = UI_HEART_X0;
+    while (i < pGlobal->hearts) {
+        rv = gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, x, UI_HEART_Y,
+                UI_HEART_FRAME0, 0/*flip*/);
+        ASSERT(rv == GFMRV_OK, rv);
+        x += 8;
+        i++;
+    }
+    while (i < UI_NUM_HEARTS) {
+        rv = gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, x, UI_HEART_Y,
+                UI_HEART_FRAME0 + 1, 0/*flip*/);
+        ASSERT(rv == GFMRV_OK, rv);
+        x += 8;
+        i++;
+    }
 
     rv = GFMRV_OK;
 __ret:

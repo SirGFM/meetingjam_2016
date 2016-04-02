@@ -120,5 +120,15 @@
 #define CAM_DEAD_X0 24
 #define CAM_DEAD_X1 16
 
+#define UI_GRASS_BAR_Y 53
+#define UI_GRASS_BAR_FRAME0 64
+#define UI_HEART_X0 40
+#define UI_HEART_Y 53
+#define UI_HEART_FRAME0 288
+#define UI_NUM_HEARTS 3
+
+#define GRASS_FRAME0 192
+#define GRASS_NUMFRAMES 3
+
 #endif /* __GAME_CONST_H__ */
 
