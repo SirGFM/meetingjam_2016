@@ -9,8 +9,11 @@
 #include <base/state.h>
 
 #include <GFraMe/gframe.h>
+#include <GFraMe/gfmGroup.h>
+#include <GFraMe/gfmGenericArray.h>
 #include <GFraMe/gfmInput.h>
 #include <GFraMe/gfmQuadtree.h>
+#include <GFraMe/gfmSprite.h>
 #include <GFraMe/gfmSpriteset.h>
 #include <GFraMe/core/gfmAudio_bkend.h>
 
@@ -78,6 +81,7 @@ enum enGameFlags {
     CFG_OPENGL3    = 0x00001000,
     /** Set if any error happened due to configurations */
     CFG_CONF_ERR   = 0x00010000,
+    CFG_SW         = 0x00100000,
     /** Set if developer mode is enabled */
     GAME_DEVMODE   = 0x00000002,
     /** Signal that the game loop should update only once and stop until it's
@@ -118,6 +122,10 @@ struct stGameCtx {
 struct stGfxCtx {
     /** 8x8 spriteset of the main texture */
     gfmSpriteset *pSset8x8;
+    gfmSpriteset *pSset8x16;
+    gfmSpriteset *pSset16x16;
+    gfmSpriteset *pSset32x8;
+    gfmSpriteset *pSset64x16;
     /** Handle of the main texture atlas */
     int texHandle;
 };
@@ -177,11 +185,22 @@ struct stConfigCtx {
     /* TODO Add button mapping */
 };
 
+struct counter {
+    int total;
+    int cur;
+};
+
+gfmGenArr_define(gfmSprite);
 /** Store game-related variables that should be globally accessible */
 struct stGlobalCtx {
     /** The quadtree for collision */
     gfmQuadtreeRoot *pQt;
-    /* TODO Add any other globally accessible variable (e.g., a tilemap) */
+    gfmSprite *pFloor;
+    gfmSprite *pCow;
+    gfmGroup *pParticles;
+    gfmGenArr_var(gfmSprite, pAliens);
+    struct counter grassCount;
+    struct counter alienCount;
 };
 
 #endif /* __GAME_CTX_H__ */

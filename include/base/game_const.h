@@ -11,19 +11,19 @@
 /* == Game's basic configurations =========================================== */
 
 /** Game's "organization" */
-#define ORG         "organization"
+#define ORG         "br.com.gamux"
 /** Game's title */
-#define TITLE       "base"
+#define TITLE       "Cow Escape"
 /** Config file name */
 #define CONF        "config.sav"
 /** Virtual window's width */
-#define V_WIDTH     320
+#define V_WIDTH     64
 /** Virtual window's height */
-#define V_HEIGHT    240
+#define V_HEIGHT    64
 /** Whether the user can resize the game window */
 #define CAN_RESIZE  1
 /** Initial background color in 0xAARRGGBB format */
-#define BG_COLOR    0xFF000000
+#define BG_COLOR    0xFF31231d
 /** Spriteset used by the FPS counter. It's ignored, if NULL */
 #define FPS_SSET    pGfx->pSset8x8
 /** First ASCII tile in FPS_SSET */
@@ -66,6 +66,27 @@
 #define QT_MAX_DEPTH    6
 /** Number of nodes required for the quadtree to subdivide */
 #define QT_MAX_NODES    10
+
+#define TEXATLAS "atlas.bmp"
+#define KEY_COLOR 0xFF00FF
+
+#define COW_X 4
+#define COW_Y 4
+#define COW_W 12
+#define COW_H 9
+#define COW_OX -2
+#define COW_OY -5
+#define GRAV 500
+#define MAP_W 160
+#define MAP_H 64
+
+#define FLOOR_X 0
+#define FLOOR_Y 48
+#define FLOOR_W 64
+#define FLOOR_H 16
+#define FLOOR_OX 0
+#define FLOOR_OY 0
+#define FLOOR_FRAME 24
 
 #endif /* __GAME_CONST_H__ */
 

@@ -60,7 +60,12 @@ gfmRV global_initUserVar() {
     rv = gfmQuadtree_getNew(&(pGlobal->pQt));
     ASSERT(rv == GFMRV_OK, rv);
 
-    /* TODO Initialize everything */
+    rv = gfmSprite_getNew(&(pGlobal->pFloor));
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_getNew(&(pGlobal->pCow));
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_getNew(&(pGlobal->pParticles));
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
@@ -74,5 +79,15 @@ void global_freeUserVar() {
     if (pGlobal->pQt) {
         gfmQuadtree_free(&(pGlobal->pQt));
     }
+    if (pGlobal->pFloor) {
+        gfmSprite_free(&(pGlobal->pFloor));
+    }
+    if (pGlobal->pCow) {
+        gfmSprite_free(&(pGlobal->pCow));
+    }
+    if (pGlobal->pParticles) {
+        gfmGroup_free(&(pGlobal->pParticles));
+    }
+    gfmGenArr_clean(pGlobal->pAliens, gfmSprite_free);
 }
 

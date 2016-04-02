@@ -14,6 +14,8 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gframe.h>
 
+#include <jam/menustate.h>
+
 /** Required by malloc() and free() */
 #include <stdlib.h>
 /** Required by memset() */
@@ -31,8 +33,9 @@ gfmRV main_loop() {
 
     while (gfm_didGetQuitFlag(pGame->pCtx) != GFMRV_TRUE) {
         if (pGame->nextState != 0) {
-            /* TODO Init the current state, if switching */
+            /* Init the current state, if switching */
             switch (pGame->nextState) {
+                case ST_MENUSTATE: menu_init(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
 
@@ -82,8 +85,9 @@ gfmRV main_loop() {
             rv = gfm_getElapsedTime(&(pGame->elapsed), pGame->pCtx);
             ASSERT(rv == GFMRV_OK, rv);
 
-            /* TODO Update the current state */
+            /* Update the current state */
             switch (pGame->curState) {
+                case ST_MENUSTATE: menu_update(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
             ASSERT(rv == GFMRV_OK, rv);
@@ -99,8 +103,9 @@ gfmRV main_loop() {
             rv = gfm_drawBegin(pGame->pCtx);
             ASSERT(rv == GFMRV_OK, rv);
 
-            /* TODO Render the current state */
+            /* Render the current state */
             switch (pGame->curState) {
+                case ST_MENUSTATE: menu_draw(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
             ASSERT(rv == GFMRV_OK, rv);
@@ -117,8 +122,9 @@ gfmRV main_loop() {
         }
 
         if (pGame->nextState != ST_NONE) {
-            /* TODO Clear the current state, if switching */
+            /* Clear the current state, if switching */
             switch (pGame->curState) {
+                case ST_MENUSTATE: menu_clean(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
 
@@ -169,6 +175,10 @@ int main(int argc, char *argv[]) {
         /* Set OpenGL 3.1 as the video backend */
         rv = gfm_setVideoBackend(pGame->pCtx, GFM_VIDEO_GL3);
     }
+    else if (pConfig->flags & CFG_SW) {
+        /* Set OpenGL 3.1 as the video backend */
+        rv = gfm_setVideoBackend(pGame->pCtx, GFM_VIDEO_SWSDL2);
+    }
     else {
         /* Set SDL 2 as the video backend (this is already the default) */
         rv = gfm_setVideoBackend(pGame->pCtx, GFM_VIDEO_SDL2);
@@ -214,10 +224,10 @@ int main(int argc, char *argv[]) {
 
     /* Initialize the FPS counter */
     if (FPS_SSET) {
-        rv = gfm_initFPSCounter(pGame->pCtx, FPS_SSET, FPS_INIT);
-        ASSERT(rv == GFMRV_OK, rv);
-        rv = gfm_setFPSCounterPos(pGame->pCtx, FPS_X, FPS_Y);
-        ASSERT(rv == GFMRV_OK, rv);
+        //rv = gfm_initFPSCounter(pGame->pCtx, FPS_SSET, FPS_INIT);
+        //ASSERT(rv == GFMRV_OK, rv);
+        //rv = gfm_setFPSCounterPos(pGame->pCtx, FPS_X, FPS_Y);
+        //ASSERT(rv == GFMRV_OK, rv);
     }
 
     /* Initialize the base FPS, the update rate and the draw rate */
@@ -227,11 +237,9 @@ int main(int argc, char *argv[]) {
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Set the initial state */
-    pGame->nextState = ST_NONE;
-#if defined(DEBUG)
+    pGame->nextState = ST_MENUSTATE;
     /* Set debug mode to running instead of stepping */
     pGame->flags |= GAME_RUN;
-#endif
 
     /* Initialize the main loop */
     rv = main_loop();

@@ -9,6 +9,8 @@
 /* TODO Add more states */
 enum enState {
     ST_NONE = 0,
+    ST_MENUSTATE,
+    ST_GAMESTATE,
     ST_MAX,
 };
 typedef enum enState state;
