@@ -31,6 +31,9 @@ gfmRV main_loop() {
     /** Return value */
     gfmRV rv;
 
+    rv = gfm_getCamera(&(pGame->pCam), pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+
     while (gfm_didGetQuitFlag(pGame->pCtx) != GFMRV_TRUE) {
         if (pGame->nextState != 0) {
             /* Init the current state, if switching */
@@ -76,12 +79,8 @@ gfmRV main_loop() {
 #else
         while (gfm_isUpdating(pGame->pCtx) == GFMRV_TRUE) {
 #endif
-            gfmCamera *pCam;
-
-            pCam = 0;
-            rv = gfm_getCamera(&pCam, pGame->pCtx);
-            ASSERT(rv == GFMRV_OK, rv);
-            rv = gfmCamera_getPosition(&(pGame->camX), &(pGame->camY), pCam);
+            rv = gfmCamera_getPosition(&(pGame->camX), &(pGame->camY),
+                    pGame->pCam);
             ASSERT(rv == GFMRV_OK, rv);
 
             rv = gfm_fpsCounterUpdateBegin(pGame->pCtx);

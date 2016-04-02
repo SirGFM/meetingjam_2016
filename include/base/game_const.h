@@ -112,5 +112,8 @@
 #define BUL_VX 32
 #define BUL_COOLDOWN 66
 
+#define CAM_DEAD_X0 24
+#define CAM_DEAD_X1 24
+
 #endif /* __GAME_CONST_H__ */
 

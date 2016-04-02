@@ -116,6 +116,7 @@ struct stGameCtx {
     state nextState;
     /** Time elapsed since the previous frame, in miliseconds */
     int elapsed;
+    gfmCamera *pCam;
     int camX;
     int camY;
 };

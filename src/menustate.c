@@ -38,6 +38,11 @@ int cowAnimDataLen = sizeof(pCowAnimData) / sizeof(int);
 gfmRV menu_init() {
     gfmRV rv;
 
+    rv = gfmCamera_setWorldDimensions(pGame->pCam, MAP_W, MAP_H);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmCamera_setDeadzone(pGame->pCam, CAM_DEAD_X0, 0/*y*/, CAM_DEAD_X1, MAP_H);
+    ASSERT(rv == GFMRV_OK, rv);
+
     /* COW */
     rv = gfmSprite_init(pGlobal->pCow, COW_X, COW_Y, COW_W, COW_H,
             pGfx->pSset16x16, COW_OX, COW_OY, 0, T_COW);
@@ -95,6 +100,7 @@ gfmRV menu_update() {
     double vx, vy;
     gfmRV rv;
     gfmCollision dir;
+    int cx, cy;
 
     /* == UPDATE ================== */
 
@@ -254,6 +260,11 @@ gfmRV menu_update() {
             pGlobal->cowAnim = anim;
         }
     }
+
+    /*CAMERA*/
+    rv = gfmSprite_getCenter(&cx, &cy, pGlobal->pCow);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmCamera_centerAtPoint(pGame->pCam, cx, cy);
 
     rv = GFMRV_OK;
 __ret:
