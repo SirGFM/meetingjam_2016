@@ -28,6 +28,7 @@ enum enType {
     /* Base type for hitbox objects (i.e., bullets, slashes, etc) */
     T_HITBOX = gfmType_reserved_7,
     T_BULLET = (1 << T_NBITS) | T_HITBOX,
+    T_EAT    = (2 << T_NBITS) | T_HITBOX,
     /* Base type for players and enemies, used in collision to go a level of
      * indirection deeper */
     T_MOB    = (1 << 15),

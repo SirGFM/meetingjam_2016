@@ -81,6 +81,11 @@
 #define MAP_H 64
 #define COW_VX 24
 #define COW_JUMPVY -150
+#define COW_EAT_FRAME 27
+#define COW_EAT_W 8
+#define COW_EAT_H 8
+#define COW_EAT_OX 2
+#define COW_EAT_OY 0
 
 #define FLOOR_X 0
 #define FLOOR_Y 48
@@ -113,7 +118,7 @@
 #define BUL_COOLDOWN 66
 
 #define CAM_DEAD_X0 24
-#define CAM_DEAD_X1 24
+#define CAM_DEAD_X1 16
 
 #endif /* __GAME_CONST_H__ */
 

@@ -60,6 +60,8 @@ gfmRV global_initUserVar() {
     rv = gfmQuadtree_getNew(&(pGlobal->pQt));
     ASSERT(rv == GFMRV_OK, rv);
 
+    rv = gfmObject_getNew(&(pGlobal->pEatHitbox));
+    ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_getNew(&(pGlobal->pFloor));
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_getNew(&(pGlobal->pCow));
@@ -78,6 +80,9 @@ __ret:
 void global_freeUserVar() {
     if (pGlobal->pQt) {
         gfmQuadtree_free(&(pGlobal->pQt));
+    }
+    if (pGlobal->pEatHitbox) {
+        gfmObject_free(&(pGlobal->pEatHitbox));
     }
     if (pGlobal->pFloor) {
         gfmSprite_free(&(pGlobal->pFloor));

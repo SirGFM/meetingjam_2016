@@ -24,13 +24,13 @@ enum cowAnim {
 int pCowAnimData[] = {
             /*len|fps|loop|data */
 /*COW_STAND_0*/ 1, 0 ,  0 ,16,
-/*COW_STAND_1*/4, 12,  1 ,16,18,19,18,
+/*COW_STAND_1*/ 4, 12,  1 ,16,18,19,18,
 /*COW_STAND_2*/12, 12,  1 ,16,18,19,18,16,18,19,18,20,18,19,18,
 /*COW_STAND_3*/12, 12,  1 ,16,18,19,18,16,18,19,18,21,18,19,18,
 /*COW_RUN    */ 2, 4 ,  1 ,22,24,
 /*COW_JUMP   */ 1, 0 ,  0 ,29,
 /*COW_FALL   */ 1, 0 ,  0 ,30,
-/*COW_EAT    */ 3, 1 ,  0 ,26,27,26,
+/*COW_EAT    */ 3, 2 ,  0 ,26,27,26,
 /*COW_HIT    */ 1, 0 ,  0 ,28
 };
 int cowAnimDataLen = sizeof(pCowAnimData) / sizeof(int);
@@ -40,10 +40,14 @@ gfmRV menu_init() {
 
     rv = gfmCamera_setWorldDimensions(pGame->pCam, MAP_W, MAP_H);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmCamera_setDeadzone(pGame->pCam, CAM_DEAD_X0, 0/*y*/, CAM_DEAD_X1, MAP_H);
+    rv = gfmCamera_setDeadzone(pGame->pCam, CAM_DEAD_X0, 0/*y*/, CAM_DEAD_X1,
+            MAP_H);
     ASSERT(rv == GFMRV_OK, rv);
 
     /* COW */
+    rv = gfmObject_init(pGlobal->pEatHitbox, 0/*x*/, 0/*y*/, COW_EAT_W,
+            COW_EAT_H, 0, T_EAT);
+    ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_init(pGlobal->pCow, COW_X, COW_Y, COW_W, COW_H,
             pGfx->pSset16x16, COW_OX, COW_OY, 0, T_COW);
     ASSERT(rv == GFMRV_OK, rv);
@@ -208,6 +212,33 @@ gfmRV menu_update() {
         ASSERT(rv == GFMRV_OK, rv);
     }
 
+    /* Hit box to eat grass */
+    if (gfmSprite_didAnimationJustChangeFrame(pGlobal->pCow) == GFMRV_TRUE) {
+        int frame;
+
+        rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
+        ASSERT(rv == GFMRV_OK, rv);
+        if (frame == COW_EAT_FRAME) {
+            rv = gfmSprite_getCenter(&cx, &cy, pGlobal->pCow);
+            ASSERT(rv == GFMRV_OK, rv);
+
+            rv = gfmObject_setPosition(pGlobal->pEatHitbox, cx + COW_EAT_OX,
+                    cy + COW_EAT_OY);
+            ASSERT(rv == GFMRV_OK, rv);
+            rv = gfmQuadtree_collideObject(pGlobal->pQt, pGlobal->pEatHitbox);
+            ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);
+            if (rv == GFMRV_QUADTREE_OVERLAPED) {
+                rv = collision_run();
+                ASSERT(rv == GFMRV_OK, rv);
+            }
+        }
+    }
+
+    if (pGlobal->cowAnim == COW_EAT &&
+            gfmSprite_didAnimationFinish(pGlobal->pCow) == GFMRV_TRUE) {
+        pGlobal->cowAnim = -1;
+    }
+
     /* == POST ========================= */
 
     /*COW*/
@@ -232,7 +263,7 @@ gfmRV menu_update() {
         pGlobal->cowAnim = COW_FALL;
     }
     /* TODO HIT */
-    else if (!(dir & gfmCollision_down)) {
+    else if (pGlobal->cowAnim == COW_EAT || !(dir & gfmCollision_down)) {
         /* Filter any other animation */
     }
     else if (vx != 0) {
@@ -240,7 +271,12 @@ gfmRV menu_update() {
         ASSERT(rv == GFMRV_OK, rv);
         pGlobal->cowAnim = COW_RUN;
     }
-    /* TODO EAT */
+    else if (pGlobal->laserTime <= 0 &&
+            (pButton->act.state & gfmInput_justPressed) == gfmInput_justPressed) {
+        rv = gfmSprite_playAnimation(pGlobal->pCow, COW_EAT);
+        ASSERT(rv == GFMRV_OK, rv);
+        pGlobal->cowAnim = COW_EAT;
+    }
     else if (pGlobal->laserTime > 0) {
         /* Force non-animated stand if shooting */
         rv = gfmSprite_playAnimation(pGlobal->pCow, COW_STAND_0);
