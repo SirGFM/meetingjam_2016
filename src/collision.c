@@ -168,6 +168,7 @@ gfmRV collision_run() {
             case T_BULLET | (T_GRASS << 16):
             case T_GRASS | (T_ALIEN << 16):
             case T_ALIEN | (T_GRASS << 16):
+            case T_GRASS | (T_GRASS << 16):
                 { /* Ignore collisiong */ } break;
             /* On Linux, a SIGINT is raised any time a unhandled collision
              * happens. When debugging, GDB will stop here and allow the user to

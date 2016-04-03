@@ -7,8 +7,14 @@
 
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
+#include <GFraMe/gfmParser.h>
 
 #include <jam/type.h>
+
+#include <string.h>
+
+int MAP_W = 1000;
+int MAP_H = 64;
 
 enum cowAnim {
     COW_STAND_0 = 0,
@@ -35,22 +41,79 @@ int pCowAnimData[] = {
 };
 int cowAnimDataLen = sizeof(pCowAnimData) / sizeof(int);
 
-gfmRV menu_init() {
+static gfmRV init_grass_group() {
     gfmRV rv;
 
-    pGlobal->hearts = UI_NUM_HEARTS;
-
-    rv = gfmCamera_setWorldDimensions(pGame->pCam, MAP_W, MAP_H);
+    rv = gfmGroup_setDefType(pGlobal->pGrass, T_CLOUD);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmCamera_setDeadzone(pGame->pCam, CAM_DEAD_X0, 0/*y*/, CAM_DEAD_X1,
-            MAP_H);
+    rv = gfmGroup_setDefSpriteset(pGlobal->pGrass, pGfx->pSset8x8);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefDimensions(pGlobal->pGrass, 4/*w*/, 4/*h*/, 0/*ox*/,
+            0/*oy*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefVelocity(pGlobal->pGrass, 0/*vx*/, 0/*vy*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefAcceleration(pGlobal->pGrass, 0/*ax*/, 0/*ay*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDeathOnLeave(pGlobal->pGrass, 0/*doDie*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDeathOnTime(pGlobal->pGrass, -1);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_preCache(pGlobal->pGrass, PART_CACHE, PART_CACHE);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDrawOrder(pGlobal->pGrass, gfmDrawOrder_newestFirst);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setCollisionQuality(pGlobal->pGrass,
+            gfmCollisionQuality_visibleOnly);
     ASSERT(rv == GFMRV_OK, rv);
 
-    /* COW */
+    rv = GFMRV_OK;
+__ret:
+    return rv;
+}
+
+static gfmRV init_grass(gfmParser *pParser) {
+    gfmRV rv;
+    gfmSprite *pGrass;
+    int x, y;
+
+    rv = gfmParser_getPos(&x, &y, pParser);
+    ASSERT(rv == GFMRV_OK, rv);
+    y -= 8;
+
+    pGrass = 0;
+    rv = gfmGroup_recycle(&pGrass, pGlobal->pGrass);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = gfmSprite_init(pGrass, x, y, 8, 8,
+        pGfx->pSset8x8, 0/*ox*/, 0/*oy*/, 0, T_GRASS);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_setFrame(pGrass, GRASS_FRAME0);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_setFixed(pGrass);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_setVelocity(pGrass, 0, 0);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_setAcceleration(pGrass, 0, 0);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
+}
+
+static gfmRV init_cow(gfmParser *pParser) {
+    gfmRV rv;
+    int x, y;
+
+    rv = gfmParser_getPos(&x, &y, pParser);
+    ASSERT(rv == GFMRV_OK, rv);
+    y -= 16;
+
     rv = gfmObject_init(pGlobal->pEatHitbox, 0/*x*/, 0/*y*/, COW_EAT_W,
             COW_EAT_H, 0, T_EAT);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmSprite_init(pGlobal->pCow, COW_X, COW_Y, COW_W, COW_H,
+    rv = gfmSprite_init(pGlobal->pCow, x, y, COW_W, COW_H,
             pGfx->pSset16x16, COW_OX, COW_OY, 0, T_COW);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_addAnimations(pGlobal->pCow, pCowAnimData, cowAnimDataLen);
@@ -58,6 +121,34 @@ gfmRV menu_init() {
     rv = gfmSprite_playAnimation(pGlobal->pCow, COW_STAND_1);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setVerticalAcceleration(pGlobal->pCow, GRAV);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
+}
+
+gfmRV menu_init() {
+    gfmRV rv;
+    gfmParser *pParser;
+
+    if (!pGlobal->pFile) {
+        pGlobal->pFile = "maps/map_easy.gfm";
+    }
+
+    pParser = 0;
+    rv = gfmParser_getNew(&pParser);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmParser_init(pParser, pGame->pCtx, pGlobal->pFile,
+            strlen(pGlobal->pFile));
+    ASSERT(rv == GFMRV_OK, rv);
+
+    pGlobal->hearts = UI_NUM_HEARTS;
+
+    rv = gfmCamera_setWorldDimensions(pGame->pCam, MAP_W, MAP_H);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmCamera_setDeadzone(pGame->pCam, CAM_DEAD_X0, 0/*y*/, CAM_DEAD_X1,
+            MAP_H);
     ASSERT(rv == GFMRV_OK, rv);
 
     /*FLOOR*/
@@ -93,6 +184,35 @@ gfmRV menu_init() {
             gfmCollisionQuality_visibleOnly);
     ASSERT(rv == GFMRV_OK, rv);
 
+    rv = init_grass_group();
+    ASSERT(rv == GFMRV_OK, rv);
+
+    while (1) {
+        char *pType;
+        gfmParserType type;
+
+        rv = gfmParser_parseNext(pParser);
+        if (rv == GFMRV_PARSER_FINISHED) {
+            break;
+        }
+
+        rv = gfmParser_getType(&type, pParser);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        pType = 0;
+        rv = gfmParser_getIngameType(&pType, pParser);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        if (!strcmp(pType, "cow")) {
+            rv = init_cow(pParser);
+            ASSERT(rv == GFMRV_OK, rv);
+        }
+        else if (!strcmp(pType, "grass")) {
+            rv = init_grass(pParser);
+            ASSERT(rv == GFMRV_OK, rv);
+        }
+    }
+
     rv = GFMRV_OK;
 __ret:
     return rv;
@@ -109,6 +229,23 @@ gfmRV menu_update() {
     int cx, cy;
 
     /* == UPDATE ================== */
+
+    if (pGlobal->grassCounter >= GRASS_MAX &&
+            (pButton->act.state & gfmInput_justPressed) ==
+            gfmInput_justPressed) {
+        int frame;
+
+        rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        if (frame != 26 || frame != 27) {
+            pGlobal->grassCounter = 0;
+            pGlobal->laserTime = LASER_TIME;
+        }
+    }
+    if (pGlobal->laserTime > 0) {
+        pGlobal->laserTime -= pGame->elapsed;
+    }
 
     /*PARTICLES*/
     if (pGlobal->cloudTime <= 0) {
@@ -154,7 +291,7 @@ gfmRV menu_update() {
         }
         else {
             x -= BUL_DX;
-            y -= BUL_DY;
+            y += BUL_DY;
             vx = -BUL_VX;
         }
 
@@ -172,6 +309,10 @@ gfmRV menu_update() {
         pGlobal->cooldown -= pGame->elapsed;
     }
     rv = gfmGroup_update(pGlobal->pParticles, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    /*GRASS*/
+    rv = gfmGroup_update(pGlobal->pGrass, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
     /*COW*/
@@ -218,6 +359,13 @@ gfmRV menu_update() {
         ASSERT(rv == GFMRV_OK, rv);
     }
 
+    rv = gfmQuadtree_collideGroup(pGlobal->pQt, pGlobal->pGrass);
+    ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);
+    if (rv == GFMRV_QUADTREE_OVERLAPED) {
+        rv = collision_run();
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
     /* Hit box to eat grass */
     if (gfmSprite_didAnimationJustChangeFrame(pGlobal->pCow) == GFMRV_TRUE) {
         int frame;
@@ -225,10 +373,21 @@ gfmRV menu_update() {
         rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
         ASSERT(rv == GFMRV_OK, rv);
         if (frame == COW_EAT_FRAME) {
+            int flipped;
+
             rv = gfmSprite_getCenter(&cx, &cy, pGlobal->pCow);
             ASSERT(rv == GFMRV_OK, rv);
 
-            rv = gfmObject_setPosition(pGlobal->pEatHitbox, cx + COW_EAT_OX,
+            rv = gfmSprite_getDirection(&flipped, pGlobal->pCow);
+            ASSERT(rv == GFMRV_OK, rv);
+            if (flipped) {
+                cx -= 5*COW_EAT_OX;
+            }
+            else {
+                cx += COW_EAT_OX;
+            }
+
+            rv = gfmObject_setPosition(pGlobal->pEatHitbox, cx,
                     cy + COW_EAT_OY);
             ASSERT(rv == GFMRV_OK, rv);
             rv = gfmQuadtree_collideObject(pGlobal->pQt, pGlobal->pEatHitbox);
@@ -277,8 +436,9 @@ gfmRV menu_update() {
         ASSERT(rv == GFMRV_OK, rv);
         pGlobal->cowAnim = COW_RUN;
     }
-    else if (pGlobal->laserTime <= 0 &&
-            (pButton->act.state & gfmInput_justPressed) == gfmInput_justPressed) {
+    else if (pGlobal->grassCounter < GRASS_MAX && pGlobal->laserTime <= 0 &&
+            (pButton->act.state & gfmInput_justPressed) ==
+            gfmInput_justPressed) {
         rv = gfmSprite_playAnimation(pGlobal->pCow, COW_EAT);
         ASSERT(rv == GFMRV_OK, rv);
         pGlobal->cowAnim = COW_EAT;
@@ -335,6 +495,8 @@ gfmRV menu_draw() {
     }
 
     rv = gfmGroup_draw(pGlobal->pParticles, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_draw(pGlobal->pGrass, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
     /*UI*/

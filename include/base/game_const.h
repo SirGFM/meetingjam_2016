@@ -77,8 +77,8 @@
 #define COW_OX -2
 #define COW_OY -5
 #define GRAV 500
-#define MAP_W 160
-#define MAP_H 64
+/*#define MAP_W 160*/
+/*#define MAP_H 64*/
 #define COW_VX 24
 #define COW_JUMPVY -150
 #define COW_EAT_FRAME 27
@@ -129,6 +129,8 @@
 
 #define GRASS_FRAME0 192
 #define GRASS_NUMFRAMES 3
+#define GRASS_MAX 4
+#define LASER_TIME 4000
 
 #endif /* __GAME_CONST_H__ */
 

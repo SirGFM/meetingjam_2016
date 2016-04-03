@@ -205,7 +205,9 @@ struct stGlobalCtx {
     gfmSprite *pFloor;
     gfmSprite *pCow;
     gfmGroup *pParticles;
+    gfmGroup *pGrass;
     gfmObject *pEatHitbox;
+    char *pFile;
     gfmGenArr_var(gfmSprite, pAliens);
     struct counter grassCount;
     struct counter alienCount;
