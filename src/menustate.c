@@ -238,7 +238,7 @@ gfmRV menu_update() {
         rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
         ASSERT(rv == GFMRV_OK, rv);
 
-        if (frame != 26 || frame != 27) {
+        if (frame != 26 && frame != 27) {
             pGlobal->grassCounter = 0;
             pGlobal->laserTime = LASER_TIME;
         }
