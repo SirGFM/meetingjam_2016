@@ -248,6 +248,38 @@ gfmRV menu_update() {
     }
 
     /*PARTICLES*/
+    if (pGlobal->starTime <= 0) {
+        int i;
+
+        i = (rand() % 4 + 1) * 3;
+        while (i > 0) {
+            gfmSprite *pStar;
+            int frame, x, y;
+
+            pStar = 0;
+            rv = gfmGroup_recycle(&pStar, pGlobal->pParticles);
+            ASSERT(rv == GFMRV_OK, rv);
+
+            x = 0 + (rand() % 8) * 8;
+            y = 0 + (rand() % 4) * 8;
+            frame = 226 + (rand() % 5);
+            rv = gfmSprite_init(pStar, pGame->camX + x, y, 8, 8, pGfx->pSset8x8, 0,
+                    0, 0, T_CLOUD);
+            ASSERT(rv == GFMRV_OK, rv);
+            rv = gfmSprite_setFrame(pStar, frame);
+            ASSERT(rv == GFMRV_OK, rv);
+            rv = gfmSprite_setVelocity(pStar, 0, 0);
+            ASSERT(rv == GFMRV_OK, rv);
+            i--;
+        }
+
+        pGlobal->starTime += 2500 - 250;
+        pGlobal->starTime += (rand() % 50) * 10;
+    }
+    if (pGlobal->starTime > 0) {
+        pGlobal->starTime -= pGame->elapsed;
+    }
+
     if (pGlobal->cloudTime <= 0) {
         gfmSprite *pCloud;
         int y;

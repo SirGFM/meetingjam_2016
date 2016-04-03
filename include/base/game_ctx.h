@@ -217,6 +217,7 @@ struct stGlobalCtx {
     int cooldown;
     int cowAnim;
     int hearts;
+    int starTime;
 };
 
 #endif /* __GAME_CTX_H__ */
