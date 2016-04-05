@@ -150,15 +150,19 @@ gfmRV collision_run() {
             } break;
             IGN_TYPES(T_CLOUD, T_COW)
             IGN_TYPES(T_CLOUD, T_BULLET)
+            IGN_TYPES(T_CLOUD, T_STAR)
             IGN_TYPES(T_BULLET, T_COW)
             IGN_TYPES(T_BULLET, T_FLOOR)
             IGN_TYPES(T_BULLET, T_EAT)
+            IGN_TYPES(T_BULLET, T_STAR)
             IGN_TYPES(T_EAT, T_FLOOR)
             IGN_TYPES(T_EAT, T_COW)
             IGN_TYPES(T_GRASS, T_FLOOR)
             IGN_TYPES(T_GRASS, T_COW)
             IGN_TYPES(T_GRASS, T_BULLET)
             IGN_TYPES(T_GRASS, T_ALIEN)
+            IGN_TYPES(T_STAR, T_ALIEN)
+            IGN_TYPES(T_STAR, T_COW)
             case T_CLOUD | (T_CLOUD << 16):
             case T_BULLET | (T_BULLET << 16):
             case T_GRASS | (T_GRASS << 16):
