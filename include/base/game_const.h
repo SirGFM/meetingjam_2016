@@ -134,6 +134,11 @@
 
 #define STAR_FRAME0 226
 #define STAR_NUM_FRAME 5
+#define STAR_NUM_MOD 5
+#define STAR_NUM_MUL 2
+#define STAR_COOLDOWN 1000
+#define STAR_COOLDOWN_MOD 50
+#define STAR_COOLDOWN_MUL 10
 
 #endif /* __GAME_CONST_H__ */
 

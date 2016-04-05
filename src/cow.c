@@ -70,6 +70,32 @@ gfmRV cow_update() {
     gfmCollision dir;
     int cx, cy;
 
+    /* Start shooting bullets */
+    if (pGlobal->grassCounter >= GRASS_MAX &&
+            (pButton->act.state & gfmInput_justPressed) ==
+            gfmInput_justPressed) {
+        int frame;
+
+        rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        if (frame != 26 && frame != 27) {
+            pGlobal->grassCounter = 0;
+            pGlobal->laserTime = LASER_TIME;
+        }
+    }
+    if (pGlobal->laserTime > 0) {
+        pGlobal->laserTime -= pGame->elapsed;
+        if (pGlobal->laserTime > 0) {
+            pGlobal->grassCounter = GRASS_MAX * pGlobal->laserTime / LASER_TIME;
+            pGlobal->grassCounter++;
+        }
+        else {
+            pGlobal->grassCounter = 0;
+        }
+    }
+
+
     /* Shoot and update bullets */
     if (pGlobal->laserTime > 0  && pGlobal->cooldown <= 0 &&
                 (pButton->act.state & gfmInput_pressed)) {

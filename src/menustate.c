@@ -117,23 +117,6 @@ gfmRV menu_update() {
 
     /* == UPDATE ================== */
 
-    if (pGlobal->grassCounter >= GRASS_MAX &&
-            (pButton->act.state & gfmInput_justPressed) ==
-            gfmInput_justPressed) {
-        int frame;
-
-        rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
-        ASSERT(rv == GFMRV_OK, rv);
-
-        if (frame != 26 && frame != 27) {
-            pGlobal->grassCounter = 0;
-            pGlobal->laserTime = LASER_TIME;
-        }
-    }
-    if (pGlobal->laserTime > 0) {
-        pGlobal->laserTime -= pGame->elapsed;
-    }
-
     rv = gfmQuadtree_initRoot(pGlobal->pQt, -8, -8, MAP_W, MAP_H, QT_MAX_DEPTH,
             QT_MAX_NODES);
     ASSERT(rv == GFMRV_OK, rv);

@@ -96,11 +96,11 @@ gfmRV particle_spawnScene() {
     if (pGlobal->starTime <= 0) {
         int i;
 
-        i = (rand() % 4 + 1) * 3;
+        i = (rand() % STAR_NUM_MOD + 1) * STAR_NUM_MUL;
         while (i > 0) {
             int x, y;
 
-            x = 0 + (rand() % 8) * 8;
+            x = (((pGame->camX / 8) - 1) * 2 + (rand() % 10)) * 8;
             y = 0 + (rand() % 4) * 8;
 
             rv = particle_recycle(pGlobal->pParticles, T_STAR, x, y, 8/*w*/,
@@ -110,8 +110,8 @@ gfmRV particle_spawnScene() {
             i--;
         }
 
-        pGlobal->starTime += 2500 - 250;
-        pGlobal->starTime += (rand() % 50) * 10;
+        pGlobal->starTime += STAR_COOLDOWN;
+        pGlobal->starTime += (rand() % STAR_COOLDOWN_MOD) * STAR_COOLDOWN_MUL;
     }
     if (pGlobal->starTime > 0) {
         pGlobal->starTime -= pGame->elapsed;
