@@ -93,7 +93,7 @@ gfmRV collision_run() {
         /** gfmObjects children (if any) */
         void *pChild1, *pChild2;
         int type1, type2;
-        int orType, isGrass1;
+        int orType, isCase1;
 
         /* Retrieve the two overlaping objects and their types */
         rv = gfmQuadtree_getOverlaping(&pObj1, &pObj2, pGlobal->pQt);
@@ -109,23 +109,27 @@ gfmRV collision_run() {
 
         /* Handle the collision */
         rv = GFMRV_OK;
-        isGrass1 = 0;
+        isCase1 = 0;
+#define COL_TYPES(T1, T2) \
+    case T1 | (T2 << 16): \
+        isCase1 = 1; \
+    case T2 | (T1 << 16):
+#define IGN_TYPES(T1, T2) \
+    case T1 | (T2 << 16): \
+    case T2 | (T1 << 16):
         switch (orType) {
             /* e.g.: Handle collision between A and B the same as A and C */
-            case T_COW | (T_FLOOR << 16):
-            case T_FLOOR | (T_COW << 16): {
+            COL_TYPES(T_COW, T_FLOOR) {
                 rv = gfmObject_collide(pObj1, pObj2);
                 if (rv == GFMRV_TRUE) {
                     rv = __floor_cow();
                 }
             } break;
-            case T_GRASS | (T_EAT << 16):
-                isGrass1 = 1;
-            case T_EAT | (T_GRASS << 16): {
+            COL_TYPES(T_GRASS, T_EAT) {
                 int frame;
                 gfmSprite *pGrass;
 
-                if (isGrass1) {
+                if (isCase1) {
                     pGrass = (gfmSprite*)pChild1;
                 }
                 else {
@@ -144,31 +148,21 @@ gfmRV collision_run() {
                 }
                 rv = GFMRV_OK;
             } break;
-            case T_CLOUD | (T_COW << 16):
+            IGN_TYPES(T_CLOUD, T_COW)
+            IGN_TYPES(T_CLOUD, T_BULLET)
+            IGN_TYPES(T_BULLET, T_COW)
+            IGN_TYPES(T_BULLET, T_FLOOR)
+            IGN_TYPES(T_BULLET, T_EAT)
+            IGN_TYPES(T_EAT, T_FLOOR)
+            IGN_TYPES(T_EAT, T_COW)
+            IGN_TYPES(T_GRASS, T_FLOOR)
+            IGN_TYPES(T_GRASS, T_COW)
+            IGN_TYPES(T_GRASS, T_BULLET)
+            IGN_TYPES(T_GRASS, T_ALIEN)
             case T_CLOUD | (T_CLOUD << 16):
-            case T_CLOUD | (T_BULLET << 16):
-            case T_COW | (T_CLOUD << 16):
-            case T_BULLET | (T_CLOUD << 16):
-            case T_BULLET | (T_COW << 16):
-            case T_COW | (T_BULLET << 16):
-            case T_BULLET | (T_FLOOR << 16):
-            case T_FLOOR | (T_BULLET << 16):
             case T_BULLET | (T_BULLET << 16):
-            case T_FLOOR | (T_EAT << 16):
-            case T_EAT | (T_FLOOR << 16):
-            case T_COW | (T_EAT << 16):
-            case T_EAT | (T_COW << 16):
-            case T_BULLET | (T_EAT << 16):
-            case T_EAT | (T_BULLET << 16):
-            case T_GRASS | (T_FLOOR << 16):
-            case T_FLOOR | (T_GRASS << 16):
-            case T_GRASS | (T_COW << 16):
-            case T_COW | (T_GRASS << 16):
-            case T_GRASS | (T_BULLET << 16):
-            case T_BULLET | (T_GRASS << 16):
-            case T_GRASS | (T_ALIEN << 16):
-            case T_ALIEN | (T_GRASS << 16):
             case T_GRASS | (T_GRASS << 16):
+            case T_STAR | (T_STAR << 16):
                 { /* Ignore collisiong */ } break;
             /* On Linux, a SIGINT is raised any time a unhandled collision
              * happens. When debugging, GDB will stop here and allow the user to

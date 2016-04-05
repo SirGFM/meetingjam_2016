@@ -11,6 +11,7 @@
 #include <GFraMe/gfmSprite.h>
 
 #include <jam/cow.h>
+#include <jam/particle.h>
 #include <jam/type.h>
 
 enum cowAnim {
@@ -72,12 +73,7 @@ gfmRV cow_update() {
     /* Shoot and update bullets */
     if (pGlobal->laserTime > 0  && pGlobal->cooldown <= 0 &&
                 (pButton->act.state & gfmInput_pressed)) {
-        gfmSprite *pBullet;
         int flipped, vx, x, y;
-
-        pBullet = 0;
-        rv = gfmGroup_recycle(&pBullet, pGlobal->pParticles);
-        ASSERT(rv == GFMRV_OK, rv);
 
         rv = gfmSprite_getDirection(&flipped, pGlobal->pCow);
         ASSERT(rv == GFMRV_OK, rv);
@@ -94,12 +90,8 @@ gfmRV cow_update() {
             vx = -BUL_VX;
         }
 
-        rv = gfmSprite_init(pBullet, x, y, BUL_W, BUL_H, pGfx->pSset8x8, BUL_OX,
-                BUL_OY, 0, T_BULLET);
-        ASSERT(rv == GFMRV_OK, rv);
-        rv = gfmSprite_setFrame(pBullet, BUL_FRAME);
-        ASSERT(rv == GFMRV_OK, rv);
-        rv = gfmSprite_setVelocity(pBullet, vx, 0/*vy*/);
+        rv = particle_recycle(pGlobal->pParticles, T_BULLET, x, y, BUL_W, BUL_H,
+                BUL_OX, BUL_OY, vx);
         ASSERT(rv == GFMRV_OK, rv);
 
         pGlobal->cooldown += BUL_COOLDOWN;
@@ -107,8 +99,6 @@ gfmRV cow_update() {
     if (pGlobal->cooldown > 0) {
         pGlobal->cooldown -= pGame->elapsed;
     }
-    rv = gfmGroup_update(pGlobal->pParticles, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
 
     /* Movement */
     rv = gfmSprite_getCollision(&dir, pGlobal->pCow);

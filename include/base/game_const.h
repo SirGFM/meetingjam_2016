@@ -132,5 +132,8 @@
 #define GRASS_MAX 4
 #define LASER_TIME 4000
 
+#define STAR_FRAME0 226
+#define STAR_NUM_FRAME 5
+
 #endif /* __GAME_CONST_H__ */
 

@@ -10,6 +10,7 @@
 #include <GFraMe/gfmParser.h>
 
 #include <jam/cow.h>
+#include <jam/particle.h>
 #include <jam/type.h>
 
 #include <string.h>
@@ -17,60 +18,16 @@
 int MAP_W = 1000;
 int MAP_H = 64;
 
-static gfmRV init_grass_group() {
-    gfmRV rv;
-
-    rv = gfmGroup_setDefType(pGlobal->pGrass, T_CLOUD);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDefSpriteset(pGlobal->pGrass, pGfx->pSset8x8);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDefDimensions(pGlobal->pGrass, 4/*w*/, 4/*h*/, 0/*ox*/,
-            0/*oy*/);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDefVelocity(pGlobal->pGrass, 0/*vx*/, 0/*vy*/);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDefAcceleration(pGlobal->pGrass, 0/*ax*/, 0/*ay*/);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDeathOnLeave(pGlobal->pGrass, 0/*doDie*/);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDeathOnTime(pGlobal->pGrass, -1);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_preCache(pGlobal->pGrass, PART_CACHE, PART_CACHE);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDrawOrder(pGlobal->pGrass, gfmDrawOrder_newestFirst);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setCollisionQuality(pGlobal->pGrass,
-            gfmCollisionQuality_visibleOnly);
-    ASSERT(rv == GFMRV_OK, rv);
-
-    rv = GFMRV_OK;
-__ret:
-    return rv;
-}
-
 static gfmRV init_grass(gfmParser *pParser) {
     gfmRV rv;
-    gfmSprite *pGrass;
     int x, y;
 
     rv = gfmParser_getPos(&x, &y, pParser);
     ASSERT(rv == GFMRV_OK, rv);
     y -= 8;
 
-    pGrass = 0;
-    rv = gfmGroup_recycle(&pGrass, pGlobal->pGrass);
-    ASSERT(rv == GFMRV_OK, rv);
-
-    rv = gfmSprite_init(pGrass, x, y, 8, 8,
-        pGfx->pSset8x8, 0/*ox*/, 0/*oy*/, 0, T_GRASS);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmSprite_setFrame(pGrass, GRASS_FRAME0);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmSprite_setFixed(pGrass);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmSprite_setVelocity(pGrass, 0, 0);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmSprite_setAcceleration(pGrass, 0, 0);
+    rv = particle_recycle(pGlobal->pGrass, T_GRASS, x, y, 8/*w*/, 8/*h*/,
+            0/*ox*/, 0/*oy*/, 0/*vx*/);
     ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
@@ -111,30 +68,12 @@ gfmRV menu_init() {
     ASSERT(rv == GFMRV_OK, rv);
 
     /*PARTICLES*/
-    rv = gfmGroup_setDefType(pGlobal->pParticles, T_CLOUD);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDefSpriteset(pGlobal->pParticles, pGfx->pSset8x8);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDefDimensions(pGlobal->pParticles, 4/*w*/, 4/*h*/, 0/*ox*/,
-            0/*oy*/);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDefVelocity(pGlobal->pParticles, 0/*vx*/, 0/*vy*/);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDefAcceleration(pGlobal->pParticles, 0/*ax*/, 0/*ay*/);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDeathOnLeave(pGlobal->pParticles, 0/*doDie*/);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDeathOnTime(pGlobal->pParticles, PART_TTL);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_preCache(pGlobal->pParticles, PART_CACHE, PART_CACHE);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDrawOrder(pGlobal->pParticles, gfmDrawOrder_newestFirst);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setCollisionQuality(pGlobal->pParticles,
-            gfmCollisionQuality_visibleOnly);
+    rv = particle_initGroup(pGlobal->pParticles, T_CLOUD, 4/*w*/, 4/*h*/,
+            PART_TTL);
     ASSERT(rv == GFMRV_OK, rv);
 
-    rv = init_grass_group();
+    rv = particle_initGroup(pGlobal->pGrass, T_GRASS, 4/*w*/, 4/*h*/,
+            -1/*ttl*/);
     ASSERT(rv == GFMRV_OK, rv);
 
     while (1) {
@@ -195,92 +134,22 @@ gfmRV menu_update() {
         pGlobal->laserTime -= pGame->elapsed;
     }
 
-    /*PARTICLES*/
-    if (pGlobal->starTime <= 0) {
-        int i;
-
-        i = (rand() % 4 + 1) * 3;
-        while (i > 0) {
-            gfmSprite *pStar;
-            int frame, x, y;
-
-            pStar = 0;
-            rv = gfmGroup_recycle(&pStar, pGlobal->pParticles);
-            ASSERT(rv == GFMRV_OK, rv);
-
-            x = 0 + (rand() % 8) * 8;
-            y = 0 + (rand() % 4) * 8;
-            frame = 226 + (rand() % 5);
-            rv = gfmSprite_init(pStar, pGame->camX + x, y, 8, 8, pGfx->pSset8x8, 0,
-                    0, 0, T_CLOUD);
-            ASSERT(rv == GFMRV_OK, rv);
-            rv = gfmSprite_setFrame(pStar, frame);
-            ASSERT(rv == GFMRV_OK, rv);
-            rv = gfmSprite_setVelocity(pStar, 0, 0);
-            ASSERT(rv == GFMRV_OK, rv);
-            i--;
-        }
-
-        pGlobal->starTime += 2500 - 250;
-        pGlobal->starTime += (rand() % 50) * 10;
-    }
-    if (pGlobal->starTime > 0) {
-        pGlobal->starTime -= pGame->elapsed;
-    }
-
-    if (pGlobal->cloudTime <= 0) {
-        gfmSprite *pCloud;
-        int y;
-
-        pCloud = 0;
-        rv = gfmGroup_recycle(&pCloud, pGlobal->pParticles);
-        ASSERT(rv == GFMRV_OK, rv);
-
-        y = 13 + (rand() % 8);
-        rv = gfmSprite_init(pCloud, pGame->camX + V_WIDTH, y, CLOUD_W, CLOUD_H,
-            pGfx->pSset32x16, 0/*ox*/, 0/*oy*/, 0, T_CLOUD);
-        ASSERT(rv == GFMRV_OK, rv);
-        rv = gfmSprite_setFrame(pCloud, CLOUD_FRAME);
-        ASSERT(rv == GFMRV_OK, rv);
-        rv = gfmSprite_setVelocity(pCloud, -(CLOUD_VX + (rand() % CLOUD_VXMOD)),
-                0/*vy*/);
-        ASSERT(rv == GFMRV_OK, rv);
-
-        pGlobal->cloudTime += CLOUD_NEXTTIME;
-        pGlobal->cloudTime += (rand() % CLOUD_NEXTTIMEMUL) * CLOUD_NEXTTIMEMOD;
-    }
-    pGlobal->cloudTime -= pGame->elapsed;
-
-    /*GRASS*/
-    rv = gfmGroup_update(pGlobal->pGrass, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
-
-    /* == COLLISION =============== */
-
     rv = gfmQuadtree_initRoot(pGlobal->pQt, -8, -8, MAP_W, MAP_H, QT_MAX_DEPTH,
             QT_MAX_NODES);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmQuadtree_populateSprite(pGlobal->pQt, pGlobal->pFloor);
     ASSERT(rv == GFMRV_OK, rv);
 
-    /*COW*/
+    rv = particle_spawnScene();
+    ASSERT(rv == GFMRV_OK, rv);
+
     rv = cow_update();
     ASSERT(rv == GFMRV_OK, rv);
 
-    rv = gfmQuadtree_collideGroup(pGlobal->pQt, pGlobal->pParticles);
-    ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);
-    if (rv == GFMRV_QUADTREE_OVERLAPED) {
-        rv = collision_run();
-        ASSERT(rv == GFMRV_OK, rv);
-    }
-
-    rv = gfmQuadtree_collideGroup(pGlobal->pQt, pGlobal->pGrass);
-    ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);
-    if (rv == GFMRV_QUADTREE_OVERLAPED) {
-        rv = collision_run();
-        ASSERT(rv == GFMRV_OK, rv);
-    }
-
+    rv = particle_update(pGlobal->pParticles);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = particle_update(pGlobal->pGrass);
+    ASSERT(rv == GFMRV_OK, rv);
 
     /* == POST ========================= */
 
