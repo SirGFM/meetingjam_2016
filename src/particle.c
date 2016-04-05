@@ -34,7 +34,7 @@ gfmRV particle_initGroup(gfmGroup *pGroup, mjType type, int w, int h, int ttl) {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_preCache(pGroup, PART_CACHE, PART_CACHE);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_setDrawOrder(pGroup, gfmDrawOrder_newestFirst);
+    rv = gfmGroup_setDrawOrder(pGroup, gfmDrawOrder_oldestFirst);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_setCollisionQuality(pGroup, gfmCollisionQuality_visibleOnly);
     ASSERT(rv == GFMRV_OK, rv);
