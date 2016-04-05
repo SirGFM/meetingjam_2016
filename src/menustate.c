@@ -158,6 +158,13 @@ gfmRV menu_draw() {
             FLOOR_FRAME, 0/*flip*/);
     ASSERT(rv == GFMRV_OK, rv);
 
+    x = (MOON_X0) * (pGame->camX / (float)(MAP_W)) + 
+            (MOON_X1) * (1.0f - pGame->camX / (float)MAP_W);
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, x, MOON_Y, MOON_FRAME,
+            0/*flip*/);
+    ASSERT(rv == GFMRV_OK, rv);
+
+
     if (pGlobal->laserTime > 0) {
         rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
         ASSERT(rv == GFMRV_OK, rv);

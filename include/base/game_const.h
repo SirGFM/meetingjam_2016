@@ -23,7 +23,7 @@
 /** Whether the user can resize the game window */
 #define CAN_RESIZE  1
 /** Initial background color in 0xAARRGGBB format */
-#define BG_COLOR    0xFF31231d
+#define BG_COLOR    0xFF363F0D
 /** Spriteset used by the FPS counter. It's ignored, if NULL */
 #define FPS_SSET    pGfx->pSset8x8
 /** First ASCII tile in FPS_SSET */
@@ -139,6 +139,11 @@
 #define STAR_COOLDOWN 1000
 #define STAR_COOLDOWN_MOD 50
 #define STAR_COOLDOWN_MUL 10
+
+#define MOON_Y 3
+#define MOON_X0 4
+#define MOON_X1 52
+#define MOON_FRAME 356
 
 #endif /* __GAME_CONST_H__ */
 
