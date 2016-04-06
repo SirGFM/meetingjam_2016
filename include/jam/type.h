@@ -31,6 +31,7 @@ enum enType {
     T_HITBOX = gfmType_reserved_7,
     T_BULLET = (1 << T_NBITS) | T_HITBOX,
     T_EAT    = (2 << T_NBITS) | T_HITBOX,
+    T_ALIENV = (3 << T_NBITS) | T_HITBOX,
     /* Base type for players and enemies */
     T_MOB    = gfmType_reserved_6,
     /* Base type for both players */

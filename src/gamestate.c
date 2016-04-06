@@ -9,6 +9,7 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmParser.h>
 
+#include <jam/alien.h>
 #include <jam/cow.h>
 #include <jam/gamestate.h>
 #include <jam/particle.h>
@@ -152,16 +153,18 @@ __ret:
 }
 
 gfmRV game_draw() {
+    float alpha;
     gfmRV rv;
-    int frame, i, x;
+    int frame, i, x, y;
 
     rv = gfm_drawTile(pGame->pCtx, pGfx->pSset64x16, 0/*x*/, FLOOR_Y,
             FLOOR_FRAME, 0/*flip*/);
     ASSERT(rv == GFMRV_OK, rv);
 
-    x = (MOON_X0) * (pGame->camX / (float)(MAP_W)) + 
-            (MOON_X1) * (1.0f - pGame->camX / (float)MAP_W);
-    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, x, MOON_Y, MOON_FRAME,
+    alpha = pGame->camX / (float)(MAP_W);
+    x = (MOON_X0) * alpha + (MOON_X1) * (1.0f - alpha);
+    y = f_MOON_Y(x);
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, x, y, MOON_FRAME,
             0/*flip*/);
     ASSERT(rv == GFMRV_OK, rv);
 

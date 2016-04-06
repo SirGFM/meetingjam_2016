@@ -10,6 +10,8 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmQuadtree.h>
 
+#include <jam/alien.h>
+
 /** Store data related to game */
 gameCtx *pGame = 0;
 
@@ -98,6 +100,6 @@ void global_freeUserVar() {
     if (pGlobal->pParticles) {
         gfmGroup_free(&(pGlobal->pParticles));
     }
-    gfmGenArr_clean(pGlobal->pAliens, gfmSprite_free);
+    gfmGenArr_clean(pGlobal->pAliens, alien_free);
 }
 

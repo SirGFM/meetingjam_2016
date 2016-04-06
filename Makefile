@@ -3,6 +3,7 @@
 # Define every object required by compilation
 #=======================================================================
   OBJS =                        \
+          $(OBJDIR)/alien.o     \
           $(OBJDIR)/assets.o    \
           $(OBJDIR)/cow.o       \
           $(OBJDIR)/collision.o \
