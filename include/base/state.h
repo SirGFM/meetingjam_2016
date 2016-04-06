@@ -6,11 +6,11 @@
 #ifndef __STATES_H__
 #define __STATES_H__
 
-/* TODO Add more states */
 enum enState {
     ST_NONE = 0,
     ST_MENUSTATE,
     ST_GAMESTATE,
+    ST_CREDITSTATE,
     ST_MAX,
 };
 typedef enum enState state;

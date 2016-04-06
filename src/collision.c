@@ -14,6 +14,8 @@
 #include <GFraMe/gfmSprite.h>
 #include <GFraMe/gfmTypes.h>
 
+#include <jam/alien.h>
+#include <jam/cow.h>
 #include <jam/type.h>
 
 #if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
@@ -148,25 +150,63 @@ gfmRV collision_run() {
                 }
                 rv = GFMRV_OK;
             } break;
+            COL_TYPES(T_ALIEN, T_COW) {
+                /* TODO Hurt cow */
+            } break;
+            COL_TYPES(T_ALIENV, T_COW) {
+                gfmObject *pObj;
+                alien *pAlien;
+                gfmCollision dir;
+
+                if (isCase1) {
+                    pAlien = (alien*)pChild1;
+                    pObj = pObj1;
+                }
+                else {
+                    pAlien = (alien*)pChild2;
+                    pObj = pObj2;
+                }
+
+                rv = gfmObject_getCurrentCollision(&dir, pObj);
+                ASSERT(rv == GFMRV_OK, rv);
+                if (dir & gfmCollision_left) {
+                    /* TODO Make alien run to the left */
+                }
+                else if (dir & gfmCollision_right) {
+                    /* TODO Make alien run to the right */
+                }
+            } break;
             IGN_TYPES(T_CLOUD, T_COW)
             IGN_TYPES(T_CLOUD, T_BULLET)
             IGN_TYPES(T_CLOUD, T_STAR)
+            IGN_TYPES(T_CLOUD, T_ALIEN)
+            IGN_TYPES(T_CLOUD, T_ALIENV)
             IGN_TYPES(T_BULLET, T_COW)
             IGN_TYPES(T_BULLET, T_FLOOR)
             IGN_TYPES(T_BULLET, T_EAT)
             IGN_TYPES(T_BULLET, T_STAR)
+            IGN_TYPES(T_BULLET, T_ALIENV)
             IGN_TYPES(T_EAT, T_FLOOR)
             IGN_TYPES(T_EAT, T_COW)
+            IGN_TYPES(T_EAT, T_ALIEN)
+            IGN_TYPES(T_EAT, T_ALIENV)
             IGN_TYPES(T_GRASS, T_FLOOR)
             IGN_TYPES(T_GRASS, T_COW)
             IGN_TYPES(T_GRASS, T_BULLET)
             IGN_TYPES(T_GRASS, T_ALIEN)
+            IGN_TYPES(T_GRASS, T_ALIENV)
             IGN_TYPES(T_STAR, T_ALIEN)
             IGN_TYPES(T_STAR, T_COW)
+            IGN_TYPES(T_STAR, T_ALIENV)
+            IGN_TYPES(T_ALIEN, T_ALIENV)
+            IGN_TYPES(T_ALIEN, T_FLOOR)
+            IGN_TYPES(T_ALIENV, T_FLOOR)
             case T_CLOUD | (T_CLOUD << 16):
             case T_BULLET | (T_BULLET << 16):
             case T_GRASS | (T_GRASS << 16):
             case T_STAR | (T_STAR << 16):
+            case T_ALIEN | (T_ALIEN << 16):
+            case T_ALIENV | (T_ALIENV << 16):
                 { /* Ignore collisiong */ } break;
             /* On Linux, a SIGINT is raised any time a unhandled collision
              * happens. When debugging, GDB will stop here and allow the user to

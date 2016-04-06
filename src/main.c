@@ -172,8 +172,6 @@ int main(int argc, char *argv[]) {
     rv = gfm_initStatic(pGame->pCtx, ORG, TITLE);
     ASSERT(rv == GFMRV_OK, rv);
 
-    /* TODO Parse argv */
-
     /* Load the configurations */
     rv = config_load();
     ASSERT(rv == GFMRV_OK, rv);

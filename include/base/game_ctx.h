@@ -191,7 +191,6 @@ struct stConfigCtx {
     int fps;
     /** Audio quality (frequency, bits per samples and number of channels) */
     gfmAudioQuality audioQuality;
-    /* TODO Add button mapping */
 };
 
 struct counter {
