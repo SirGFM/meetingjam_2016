@@ -14,7 +14,7 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gframe.h>
 
-#include <jam/menustate.h>
+#include <jam/gamestate.h>
 
 /** Required by malloc() and free() */
 #include <stdlib.h>
@@ -38,7 +38,7 @@ gfmRV main_loop() {
         if (pGame->nextState != 0) {
             /* Init the current state, if switching */
             switch (pGame->nextState) {
-                case ST_MENUSTATE: menu_init(); break;
+                case ST_GAMESTATE: game_init(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
 
@@ -94,7 +94,7 @@ gfmRV main_loop() {
 
             /* Update the current state */
             switch (pGame->curState) {
-                case ST_MENUSTATE: menu_update(); break;
+                case ST_GAMESTATE: game_update(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
             ASSERT(rv == GFMRV_OK, rv);
@@ -112,7 +112,7 @@ gfmRV main_loop() {
 
             /* Render the current state */
             switch (pGame->curState) {
-                case ST_MENUSTATE: menu_draw(); break;
+                case ST_GAMESTATE: game_draw(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
             ASSERT(rv == GFMRV_OK, rv);
@@ -131,7 +131,7 @@ gfmRV main_loop() {
         if (pGame->nextState != ST_NONE) {
             /* Clear the current state, if switching */
             switch (pGame->curState) {
-                case ST_MENUSTATE: menu_clean(); break;
+                case ST_GAMESTATE: game_clean(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
 
@@ -244,7 +244,7 @@ int main(int argc, char *argv[]) {
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Set the initial state */
-    pGame->nextState = ST_MENUSTATE;
+    pGame->nextState = ST_GAMESTATE;
     /* Set debug mode to running instead of stepping */
 #if defined(DEBUG)
     pGame->flags |= GAME_RUN;

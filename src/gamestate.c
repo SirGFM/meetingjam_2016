@@ -1,5 +1,5 @@
 /**
- * @file src/menustate.c
+ * @file src/gamestate.c
  */
 #include <base/game_ctx.h>
 #include <base/game_const.h>
@@ -10,6 +10,7 @@
 #include <GFraMe/gfmParser.h>
 
 #include <jam/cow.h>
+#include <jam/gamestate.h>
 #include <jam/particle.h>
 #include <jam/type.h>
 
@@ -35,7 +36,7 @@ __ret:
     return rv;
 }
 
-gfmRV menu_init() {
+gfmRV game_init() {
     gfmRV rv;
     gfmParser *pParser;
 
@@ -107,11 +108,11 @@ __ret:
     return rv;
 }
 
-gfmRV menu_clean() {
+gfmRV game_clean() {
     return GFMRV_OK;
 }
 
-gfmRV menu_update() {
+gfmRV game_update() {
     gfmRV rv;
     int cx, cy;
 
@@ -150,7 +151,7 @@ __ret:
     return rv;
 }
 
-gfmRV menu_draw() {
+gfmRV game_draw() {
     gfmRV rv;
     int frame, i, x;
 
