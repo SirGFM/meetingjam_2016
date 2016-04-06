@@ -4,12 +4,14 @@
 #=======================================================================
   OBJS =                        \
           $(OBJDIR)/assets.o    \
+          $(OBJDIR)/cow.o       \
           $(OBJDIR)/collision.o \
           $(OBJDIR)/config.o    \
           $(OBJDIR)/global.o    \
           $(OBJDIR)/input.o     \
           $(OBJDIR)/main.o      \
-          $(OBJDIR)/menustate.o
+          $(OBJDIR)/menustate.o \
+          $(OBJDIR)/particle.o
 #=======================================================================
 
 #=======================================================================

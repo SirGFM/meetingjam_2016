@@ -22,7 +22,9 @@
 #define T_NBITS 5
 
 enum enType {
-    T_CLOUD   = gfmType_reserved_5,
+    T_PART    = gfmType_reserved_5,
+    T_CLOUD   = (1 << T_NBITS) | T_PART,
+    T_STAR    = (2 << T_NBITS) | T_PART,
     /* Base type for collideables that doesn't hurt nor move (e.g., floor) */
     T_FLOOR   = gfmType_reserved_4,
     /* Base type for hitbox objects (i.e., bullets, slashes, etc) */
@@ -36,7 +38,7 @@ enum enType {
     T_ALIEN  = (2 << T_NBITS) | T_MOB,
     T_GRASS  = (3 << T_NBITS) | T_MOB,
 };
-typedef enum enType jjType;
+typedef enum enType mjType;
 
 #endif /* __TYPE_H__ */
 
