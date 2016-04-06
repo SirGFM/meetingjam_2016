@@ -15,10 +15,10 @@ typedef struct stAlien alien;
 
 gfmRV alien_getNew(alien **ppCtx);
 void alien_free(alien **ppCtx);
-gfmRV alien_init(alien *pAlien, gfmParser *pParser);
-gfmRV alien_update(alien *pAlien);
-gfmRV alien_postUpdate(alien *pAlien);
-gfmRV alien_draw(alien *pAlien);
+gfmRV alien_init(gfmParser *pParser);
+gfmRV alien_update();
+gfmRV alien_postUpdate();
+gfmRV alien_draw();
 
 #endif /* __ALIEN_H__ */
 

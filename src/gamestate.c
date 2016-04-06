@@ -45,6 +45,8 @@ gfmRV game_init() {
         pGlobal->pFile = "maps/map_easy.gfm";
     }
 
+    gfmGenArr_reset(pGlobal->pAliens);
+
     pParser = 0;
     rv = gfmParser_getNew(&pParser);
     ASSERT(rv == GFMRV_OK, rv);
