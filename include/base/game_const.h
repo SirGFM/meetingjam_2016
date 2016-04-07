@@ -70,9 +70,9 @@
 
 #define COW_X 4
 #define COW_Y 4
-#define COW_W 12
+#define COW_W 10
 #define COW_H 9
-#define COW_OX -2
+#define COW_OX -3
 #define COW_OY -5
 #define GRAV 500
 /*#define MAP_W 160*/
@@ -152,7 +152,8 @@
 #define f_MOON_A    (f_MOON_hY / (f_MOON_hX * f_MOON_hX + f_MOON_B * f_MOON_hX + f_MOON_C))
 #define f_MOON_Y(x) (MOON_Y - (int)(f_MOON_A * (x * x + f_MOON_B * x + f_MOON_C)))
 
-#define ALIEN_VX 16
+#define ALIEN_VX 20
+#define ALIEN_COOLDOWN 2000
 
 #endif /* __GAME_CONST_H__ */
 

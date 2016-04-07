@@ -182,9 +182,6 @@ gfmRV game_draw() {
     ASSERT(rv == GFMRV_OK, rv);
 
 
-    rv = gfmGroup_draw(pGlobal->pGrass, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
-
     rv = cow_draw();
     ASSERT(rv == GFMRV_OK, rv);
     rv = alien_draw();
@@ -192,6 +189,8 @@ gfmRV game_draw() {
     rv = gfmGroup_draw(pGlobal->pBullets, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_draw(pGlobal->pParticles, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_draw(pGlobal->pGrass, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
     rv = gfm_drawTile(pGame->pCtx, pGfx->pSset32x8, 0/*x*/, UI_GRASS_BAR_Y,

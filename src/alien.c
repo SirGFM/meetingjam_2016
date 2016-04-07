@@ -24,8 +24,8 @@ enum alienAnim {
 int pAlienAnimData[] = {
             /*len|fps|loop|data */
 /*ALIEN_STAND*/16, 12,  1 ,64,64,64,64,65,64,66,64,65,64,66,64,64,64,67,68,
-/*ALIEN_RUN  */ 4, 4 ,  1 ,69,70,69,71,
-/*ALIEN_HIT  */ 2, 4 ,  1 ,72,73
+/*ALIEN_RUN  */ 4, 8 ,  1 ,69,70,71,70,
+/*ALIEN_HIT  */ 2, 8 ,  1 ,72,73
 };
 int alienAnimDataLen = sizeof(pAlienAnimData) / sizeof(int);
 
@@ -77,9 +77,9 @@ gfmRV alien_init(gfmParser *pParser) {
 
     rv = gfmParser_getPos(&x, &y, pParser);
     ASSERT(rv == GFMRV_OK, rv);
-    y -= 14;
-    rv = gfmSprite_init(pAlien->pSelf, x, y, 4/*w*/, 12/*h*/, pGfx->pSset8x16,
-            -2/*ox*/, -2/*oy*/, pAlien, T_ALIEN);
+    y -= 12;
+    rv = gfmSprite_init(pAlien->pSelf, x, y, 2/*w*/, 10/*h*/, pGfx->pSset8x16,
+            -3/*ox*/, -4/*oy*/, pAlien, T_ALIEN);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_addAnimations(pAlien->pSelf, pAlienAnimData,
             alienAnimDataLen);
@@ -175,7 +175,28 @@ static gfmRV _alien_postUpdate(alien *pAlien) {
         }
         else {
             vx = 0;
+            switch(rand() % 10) {
+                case 0:
+                    vx = ALIEN_VX;
+                case 1:
+                case 2:
+                case 3:
+                case 4: {
+                    rv = gfmSprite_setDirection(pAlien->pSelf, 1/*flipped*/);
+                    ASSERT(rv == GFMRV_OK, rv);
+                } break;
+                case 5:
+                    vx = -ALIEN_VX;
+                case 6:
+                case 7:
+                case 8:
+                case 9: {
+                    rv = gfmSprite_setDirection(pAlien->pSelf, 0/*flipped*/);
+                    ASSERT(rv == GFMRV_OK, rv);
+                } break;
+            }
         }
+        pAlien->cowRelativePos = 0;
 
         rv = gfmSprite_setHorizontalVelocity(pAlien->pSelf, vx);
         ASSERT(rv == GFMRV_OK, rv);
@@ -190,6 +211,8 @@ static gfmRV _alien_postUpdate(alien *pAlien) {
             rv = gfmSprite_playAnimation(pAlien->pSelf, ALIEN_STAND);
             ASSERT(rv == GFMRV_OK, rv);
         }
+
+        pAlien->timer += ALIEN_COOLDOWN;
     }
     else {
         pAlien->timer -= pGame->elapsed;
@@ -223,6 +246,10 @@ __ret:
 }
 
 void alien_pursueDir(alien *pAlien, int goLeft) {
+    if (pAlien->cowRelativePos != 0) {
+        return;
+    }
+
     if (goLeft) {
         pAlien->cowRelativePos = -1;
     }

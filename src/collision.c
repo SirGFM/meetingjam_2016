@@ -175,26 +175,30 @@ gfmRV collision_run() {
                 /* TODO Move it slightly upward */
             } break;
             COL_TYPES(T_ALIENV, T_COW) {
-                gfmObject *pObj;
+                gfmObject *pOther, *pSelf;
                 alien *pAlien;
-                gfmCollision dir;
+                int x1, x2;
 
                 if (isCase1) {
                     pAlien = (alien*)pChild1;
-                    pObj = pObj1;
+                    pSelf = pObj1;
+                    pOther = pObj2;
                 }
                 else {
                     pAlien = (alien*)pChild2;
-                    pObj = pObj2;
+                    pSelf = pObj2;
+                    pOther = pObj1;
                 }
 
-                rv = gfmObject_getCurrentCollision(&dir, pObj);
+                rv = gfmObject_getHorizontalPosition(&x1, pSelf);
                 ASSERT(rv == GFMRV_OK, rv);
-                if (dir & gfmCollision_left) {
+                rv = gfmObject_getHorizontalPosition(&x2, pOther);
+                ASSERT(rv == GFMRV_OK, rv);
+                if (x2 < x1) {
                     /* Make alien run to the left */
                     alien_pursueDir(pAlien, 1/*goLeft*/);
                 }
-                else if (dir & gfmCollision_right) {
+                else {
                     /* Make alien run to the right */
                     alien_pursueDir(pAlien, 0/*goLeft*/);
                 }
