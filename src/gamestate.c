@@ -9,6 +9,7 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmParser.h>
 
+#include <jam/alien.h>
 #include <jam/cow.h>
 #include <jam/gamestate.h>
 #include <jam/particle.h>
@@ -44,6 +45,8 @@ gfmRV game_init() {
         pGlobal->pFile = "maps/map_easy.gfm";
     }
 
+    gfmGenArr_reset(pGlobal->pAliens);
+
     pParser = 0;
     rv = gfmParser_getNew(&pParser);
     ASSERT(rv == GFMRV_OK, rv);
@@ -72,10 +75,16 @@ gfmRV game_init() {
     rv = particle_initGroup(pGlobal->pParticles, T_CLOUD, 4/*w*/, 4/*h*/,
             PART_TTL);
     ASSERT(rv == GFMRV_OK, rv);
+    rv = particle_initGroup(pGlobal->pBullets, T_CLOUD, 4/*w*/, 4/*h*/,
+            PART_TTL);
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = particle_initGroup(pGlobal->pGrass, T_GRASS, 4/*w*/, 4/*h*/,
             -1/*ttl*/);
     ASSERT(rv == GFMRV_OK, rv);
+
+    pGlobal->grassCount.total = 0;
+    pGlobal->alienCount.total = 0;
 
     while (1) {
         char *pType;
@@ -100,8 +109,17 @@ gfmRV game_init() {
         else if (!strcmp(pType, "grass")) {
             rv = init_grass(pParser);
             ASSERT(rv == GFMRV_OK, rv);
+            pGlobal->grassCount.total++;
+        }
+        else if (!strcmp(pType, "alien")) {
+            rv = alien_init(pParser);
+            ASSERT(rv == GFMRV_OK, rv);
+            pGlobal->alienCount.total++;
         }
     }
+
+    pGlobal->grassCount.cur = pGlobal->grassCount.total;
+    pGlobal->alienCount.cur = pGlobal->alienCount.total;
 
     rv = GFMRV_OK;
 __ret:
@@ -116,35 +134,39 @@ gfmRV game_update() {
     gfmRV rv;
     int cx, cy;
 
-    /* == UPDATE ================== */
-
     rv = gfmQuadtree_initRoot(pGlobal->pQt, -8, -8, MAP_W, MAP_H, QT_MAX_DEPTH,
             QT_MAX_NODES);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmQuadtree_populateSprite(pGlobal->pQt, pGlobal->pFloor);
     ASSERT(rv == GFMRV_OK, rv);
 
-    rv = particle_spawnScene();
-    ASSERT(rv == GFMRV_OK, rv);
+    /* == UPDATE ================== */
 
     rv = cow_update();
     ASSERT(rv == GFMRV_OK, rv);
-
-    rv = particle_update(pGlobal->pParticles);
+    rv = alien_update();
     ASSERT(rv == GFMRV_OK, rv);
-    rv = particle_update(pGlobal->pGrass);
+
+    rv = particle_update(pGlobal->pParticles, 0/*doCollide*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = particle_update(pGlobal->pBullets, 1/*doCollide*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = particle_update(pGlobal->pGrass, 1/*doCollide*/);
     ASSERT(rv == GFMRV_OK, rv);
 
     /* == POST ========================= */
 
-    /*COW*/
     rv = cow_postUpdate();
     ASSERT(rv == GFMRV_OK, rv);
+    rv = alien_postUpdate();
+    ASSERT(rv == GFMRV_OK, rv);
 
-    /*CAMERA*/
     rv = gfmSprite_getCenter(&cx, &cy, pGlobal->pCow);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmCamera_centerAtPoint(pGame->pCam, cx, cy);
+
+    rv = particle_spawnScene();
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
@@ -152,39 +174,33 @@ __ret:
 }
 
 gfmRV game_draw() {
+    float alpha;
     gfmRV rv;
-    int frame, i, x;
+    int i, x, y;
 
     rv = gfm_drawTile(pGame->pCtx, pGfx->pSset64x16, 0/*x*/, FLOOR_Y,
             FLOOR_FRAME, 0/*flip*/);
     ASSERT(rv == GFMRV_OK, rv);
 
-    x = (MOON_X0) * (pGame->camX / (float)(MAP_W)) + 
-            (MOON_X1) * (1.0f - pGame->camX / (float)MAP_W);
-    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, x, MOON_Y, MOON_FRAME,
+    alpha = pGame->camX / (float)(MAP_W);
+    x = (MOON_X0) * alpha + (MOON_X1) * (1.0f - alpha);
+    y = f_MOON_Y(x);
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, x, y, MOON_FRAME,
             0/*flip*/);
     ASSERT(rv == GFMRV_OK, rv);
 
 
-    if (pGlobal->laserTime > 0) {
-        rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
-        ASSERT(rv == GFMRV_OK, rv);
-        rv = gfmSprite_setFrame(pGlobal->pCow, frame | 1);
-        ASSERT(rv == GFMRV_OK, rv);
-    }
-    rv = gfmSprite_draw(pGlobal->pCow, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
-    if (pGlobal->laserTime > 0) {
-        rv = gfmSprite_setFrame(pGlobal->pCow, frame | 1);
-        ASSERT(rv == GFMRV_OK, rv);
-    }
-
-    rv = gfmGroup_draw(pGlobal->pParticles, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
     rv = cow_draw();
     ASSERT(rv == GFMRV_OK, rv);
+    rv = alien_draw();
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_draw(pGlobal->pBullets, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_draw(pGlobal->pParticles, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_draw(pGlobal->pGrass, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
 
-    /*UI*/
     rv = gfm_drawTile(pGame->pCtx, pGfx->pSset32x8, 0/*x*/, UI_GRASS_BAR_Y,
             UI_GRASS_BAR_FRAME0 + pGlobal->grassCounter, 0/*flip*/);
     ASSERT(rv == GFMRV_OK, rv);

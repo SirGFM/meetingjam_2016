@@ -17,6 +17,8 @@
 #include <GFraMe/gfmSpriteset.h>
 #include <GFraMe/core/gfmAudio_bkend.h>
 
+#include <jam/alien.h>
+
 /* == Types declaration ===================================================== */
 
 typedef struct stGameCtx gameCtx;
@@ -189,7 +191,6 @@ struct stConfigCtx {
     int fps;
     /** Audio quality (frequency, bits per samples and number of channels) */
     gfmAudioQuality audioQuality;
-    /* TODO Add button mapping */
 };
 
 struct counter {
@@ -197,7 +198,7 @@ struct counter {
     int cur;
 };
 
-gfmGenArr_define(gfmSprite);
+gfmGenArr_define(alien);
 /** Store game-related variables that should be globally accessible */
 struct stGlobalCtx {
     /** The quadtree for collision */
@@ -205,10 +206,11 @@ struct stGlobalCtx {
     gfmSprite *pFloor;
     gfmSprite *pCow;
     gfmGroup *pParticles;
+    gfmGroup *pBullets;
     gfmGroup *pGrass;
     gfmObject *pEatHitbox;
     char *pFile;
-    gfmGenArr_var(gfmSprite, pAliens);
+    gfmGenArr_var(alien, pAliens);
     struct counter grassCount;
     struct counter alienCount;
     int grassCounter;
@@ -218,6 +220,7 @@ struct stGlobalCtx {
     int cowAnim;
     int hearts;
     int starTime;
+    int cowHitstun;
 };
 
 #endif /* __GAME_CTX_H__ */

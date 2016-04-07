@@ -6,8 +6,6 @@
 #ifndef __GAME_CONST_H__
 #define __GAME_CONST_H__
 
-/* TODO Set attributes for the game */
-
 /* == Game's basic configurations =========================================== */
 
 /** Game's "organization" */
@@ -72,9 +70,9 @@
 
 #define COW_X 4
 #define COW_Y 4
-#define COW_W 12
+#define COW_W 10
 #define COW_H 9
-#define COW_OX -2
+#define COW_OX -3
 #define COW_OY -5
 #define GRAV 500
 /*#define MAP_W 160*/
@@ -86,6 +84,7 @@
 #define COW_EAT_H 8
 #define COW_EAT_OX 2
 #define COW_EAT_OY 0
+#define COW_HITSTUN 4000
 
 #define FLOOR_X 0
 #define FLOOR_Y 48
@@ -140,10 +139,21 @@
 #define STAR_COOLDOWN_MOD 50
 #define STAR_COOLDOWN_MUL 10
 
-#define MOON_Y 3
+#define MOON_FRAME 356
+#define MOON_Y 13
+#define MOON_Y_APPEX 3
 #define MOON_X0 4
 #define MOON_X1 52
-#define MOON_FRAME 356
+
+#define f_MOON_hY   (MOON_Y - MOON_Y_APPEX)
+#define f_MOON_hX   ((MOON_X0 + MOON_X1) * 0.5f)
+#define f_MOON_B    (-(MOON_X0 + MOON_X1))
+#define f_MOON_C    (-MOON_X0 * MOON_X0 - MOON_X0 * f_MOON_B)
+#define f_MOON_A    (f_MOON_hY / (f_MOON_hX * f_MOON_hX + f_MOON_B * f_MOON_hX + f_MOON_C))
+#define f_MOON_Y(x) (MOON_Y - (int)(f_MOON_A * (x * x + f_MOON_B * x + f_MOON_C)))
+
+#define ALIEN_VX 20
+#define ALIEN_COOLDOWN 2000
 
 #endif /* __GAME_CONST_H__ */
 

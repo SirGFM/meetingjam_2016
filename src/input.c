@@ -49,7 +49,6 @@ gfmRV input_updateButtons() {
             ASSERT(rv == GFMRV_OK, rv);
         }
         pConfig->flags ^= CFG_FULLSCREEN;
-        /* TODO Save the new state of the game's window */
     }
 #if defined(DEBUG)
     /* Switch quadtree visibility */
@@ -65,8 +64,6 @@ gfmRV input_updateButtons() {
     rv = input_updateDebugButtons();
     ASSERT(rv == GFMRV_OK, rv);
 #endif
-
-    /* TODO Add actions that should be triggered as soon as key are pressed */
 
     rv = GFMRV_OK;
 __ret:

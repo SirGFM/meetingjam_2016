@@ -74,7 +74,7 @@ gfmRV particle_recycle(gfmGroup *pGroup, mjType type, int x, int y, int w,
     pSpr = 0;
     rv = gfmGroup_recycle(&pSpr, pGroup);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmSprite_init(pSpr, x, y, 2, h, pSset, ox, oy, 0, type);
+    rv = gfmSprite_init(pSpr, x, y, w, h, pSset, ox, oy, 0, type);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setFrame(pSpr, frame);
     ASSERT(rv == GFMRV_OK, rv);
@@ -137,16 +137,18 @@ __ret:
     return rv;
 }
 
-gfmRV particle_update(gfmGroup *pGroup) {
+gfmRV particle_update(gfmGroup *pGroup, int doCollide) {
     gfmRV rv;
 
     rv = gfmGroup_update(pGroup, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmQuadtree_collideGroup(pGlobal->pQt, pGroup);
-    ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);
-    if (rv == GFMRV_QUADTREE_OVERLAPED) {
-        rv = collision_run();
-        ASSERT(rv == GFMRV_OK, rv);
+    if (doCollide) {
+        rv = gfmQuadtree_collideGroup(pGlobal->pQt, pGroup);
+        ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);
+        if (rv == GFMRV_QUADTREE_OVERLAPED) {
+            rv = collision_run();
+            ASSERT(rv == GFMRV_OK, rv);
+        }
     }
 
     rv = GFMRV_OK;
