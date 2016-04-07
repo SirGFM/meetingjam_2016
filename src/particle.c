@@ -70,6 +70,10 @@ gfmRV particle_recycle(gfmGroup *pGroup, mjType type, int x, int y, int w,
     else if (type == T_GRASS) {
         frame = GRASS_FRAME0;
     }
+    else {
+        /* Won't happen, but avoid warning */
+        frame = 0;
+    }
 
     pSpr = 0;
     rv = gfmGroup_recycle(&pSpr, pGroup);
