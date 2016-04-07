@@ -74,7 +74,7 @@ gfmRV particle_recycle(gfmGroup *pGroup, mjType type, int x, int y, int w,
     pSpr = 0;
     rv = gfmGroup_recycle(&pSpr, pGroup);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmSprite_init(pSpr, x, y, 2, h, pSset, ox, oy, 0, type);
+    rv = gfmSprite_init(pSpr, x, y, w, h, pSset, ox, oy, 0, type);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setFrame(pSpr, frame);
     ASSERT(rv == GFMRV_OK, rv);

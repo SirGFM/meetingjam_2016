@@ -142,6 +142,7 @@ gfmRV collision_run() {
                 ASSERT(rv == GFMRV_OK, rv);
                 if (frame == GRASS_FRAME0 + GRASS_NUMFRAMES - 1) {
                     pGlobal->grassCounter++;
+                    pGlobal->grassCount.cur--;
                 }
                 if (frame != GRASS_FRAME0 + GRASS_NUMFRAMES) {
                     frame++;

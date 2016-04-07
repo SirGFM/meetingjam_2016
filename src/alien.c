@@ -261,9 +261,17 @@ void alien_pursueDir(alien *pAlien, int goLeft) {
 gfmRV alien_hit(alien *pAlien) {
     gfmRV rv;
 
+    if (pAlien->anim == ALIEN_HIT) {
+        return GFMRV_OK;
+    }
+
     pAlien->anim = ALIEN_HIT;
     rv = gfmSprite_playAnimation(pAlien->pSelf, ALIEN_HIT);
     ASSERT(rv == GFMRV_OK, rv);
+
+    pGlobal->alienCount.cur--;
+
+    rv = gfmSprite_setVerticalAcceleration(pAlien->pSelf, GRAV);
 
     rv = GFMRV_OK;
 __ret:

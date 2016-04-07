@@ -83,6 +83,9 @@ gfmRV game_init() {
             -1/*ttl*/);
     ASSERT(rv == GFMRV_OK, rv);
 
+    pGlobal->grassCount.total = 0;
+    pGlobal->alienCount.total = 0;
+
     while (1) {
         char *pType;
         gfmParserType type;
@@ -106,12 +109,17 @@ gfmRV game_init() {
         else if (!strcmp(pType, "grass")) {
             rv = init_grass(pParser);
             ASSERT(rv == GFMRV_OK, rv);
+            pGlobal->grassCount.total++;
         }
         else if (!strcmp(pType, "alien")) {
             rv = alien_init(pParser);
             ASSERT(rv == GFMRV_OK, rv);
+            pGlobal->alienCount.total++;
         }
     }
+
+    pGlobal->grassCount.cur = pGlobal->grassCount.total;
+    pGlobal->alienCount.cur = pGlobal->alienCount.total;
 
     rv = GFMRV_OK;
 __ret:
