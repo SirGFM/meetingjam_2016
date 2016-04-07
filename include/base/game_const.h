@@ -84,6 +84,7 @@
 #define COW_EAT_H 8
 #define COW_EAT_OX 2
 #define COW_EAT_OY 0
+#define COW_HITSTUN 4000
 
 #define FLOOR_X 0
 #define FLOOR_Y 48
@@ -150,6 +151,8 @@
 #define f_MOON_C    (-MOON_X0 * MOON_X0 - MOON_X0 * f_MOON_B)
 #define f_MOON_A    (f_MOON_hY / (f_MOON_hX * f_MOON_hX + f_MOON_B * f_MOON_hX + f_MOON_C))
 #define f_MOON_Y(x) (MOON_Y - (int)(f_MOON_A * (x * x + f_MOON_B * x + f_MOON_C)))
+
+#define ALIEN_VX 16
 
 #endif /* __GAME_CONST_H__ */
 

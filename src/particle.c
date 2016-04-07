@@ -137,16 +137,18 @@ __ret:
     return rv;
 }
 
-gfmRV particle_update(gfmGroup *pGroup) {
+gfmRV particle_update(gfmGroup *pGroup, int doCollide) {
     gfmRV rv;
 
     rv = gfmGroup_update(pGroup, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmQuadtree_collideGroup(pGlobal->pQt, pGroup);
-    ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);
-    if (rv == GFMRV_QUADTREE_OVERLAPED) {
-        rv = collision_run();
-        ASSERT(rv == GFMRV_OK, rv);
+    if (doCollide) {
+        rv = gfmQuadtree_collideGroup(pGlobal->pQt, pGroup);
+        ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);
+        if (rv == GFMRV_QUADTREE_OVERLAPED) {
+            rv = collision_run();
+            ASSERT(rv == GFMRV_OK, rv);
+        }
     }
 
     rv = GFMRV_OK;

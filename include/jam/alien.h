@@ -19,6 +19,8 @@ gfmRV alien_init(gfmParser *pParser);
 gfmRV alien_update();
 gfmRV alien_postUpdate();
 gfmRV alien_draw();
+void alien_pursueDir(alien *pAlien, int goLeft);
+gfmRV alien_hit(alien *pAlien);
 
 #endif /* __ALIEN_H__ */
 

@@ -70,6 +70,8 @@ gfmRV global_initUserVar() {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_getNew(&(pGlobal->pParticles));
     ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_getNew(&(pGlobal->pBullets));
+    ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_getNew(&(pGlobal->pGrass));
     ASSERT(rv == GFMRV_OK, rv);
 
@@ -96,6 +98,9 @@ void global_freeUserVar() {
     }
     if (pGlobal->pGrass) {
         gfmGroup_free(&(pGlobal->pGrass));
+    }
+    if (pGlobal->pBullets) {
+        gfmGroup_free(&(pGlobal->pBullets));
     }
     if (pGlobal->pParticles) {
         gfmGroup_free(&(pGlobal->pParticles));

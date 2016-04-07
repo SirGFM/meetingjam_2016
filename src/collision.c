@@ -151,7 +151,28 @@ gfmRV collision_run() {
                 rv = GFMRV_OK;
             } break;
             COL_TYPES(T_ALIEN, T_COW) {
-                /* TODO Hurt cow */
+                rv = cow_hit();
+            } break;
+            COL_TYPES(T_ALIEN, T_BULLET) {
+                alien *pAlien;
+                gfmSprite *pBullet;
+
+                if (isCase1) {
+                    pAlien = (alien*)pChild1;
+                    rv = gfmObject_getChild((void**)&pBullet, &type2, pObj2);
+                    ASSERT(rv == GFMRV_OK, rv);
+                }
+                else {
+                    pAlien = (alien*)pChild2;
+                    rv = gfmObject_getChild((void**)&pBullet, &type1, pObj1);
+                    ASSERT(rv == GFMRV_OK, rv);
+                }
+
+                rv = alien_hit(pAlien);
+                ASSERT(rv == GFMRV_OK, rv);
+
+                /* TODO Explode bullet */
+                /* TODO Move it slightly upward */
             } break;
             COL_TYPES(T_ALIENV, T_COW) {
                 gfmObject *pObj;
@@ -170,10 +191,12 @@ gfmRV collision_run() {
                 rv = gfmObject_getCurrentCollision(&dir, pObj);
                 ASSERT(rv == GFMRV_OK, rv);
                 if (dir & gfmCollision_left) {
-                    /* TODO Make alien run to the left */
+                    /* Make alien run to the left */
+                    alien_pursueDir(pAlien, 1/*goLeft*/);
                 }
                 else if (dir & gfmCollision_right) {
-                    /* TODO Make alien run to the right */
+                    /* Make alien run to the right */
+                    alien_pursueDir(pAlien, 0/*goLeft*/);
                 }
             } break;
             IGN_TYPES(T_CLOUD, T_COW)

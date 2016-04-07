@@ -206,6 +206,7 @@ struct stGlobalCtx {
     gfmSprite *pFloor;
     gfmSprite *pCow;
     gfmGroup *pParticles;
+    gfmGroup *pBullets;
     gfmGroup *pGrass;
     gfmObject *pEatHitbox;
     char *pFile;
@@ -219,6 +220,7 @@ struct stGlobalCtx {
     int cowAnim;
     int hearts;
     int starTime;
+    int cowHitstun;
 };
 
 #endif /* __GAME_CTX_H__ */

@@ -35,7 +35,7 @@ int pCowAnimData[] = {
 /*COW_JUMP   */ 1, 0 ,  0 ,29,
 /*COW_FALL   */ 1, 0 ,  0 ,30,
 /*COW_EAT    */ 3, 3 ,  0 ,26,27,26,
-/*COW_HIT    */ 1, 0 ,  0 ,28
+/*COW_HIT    */13, 8 ,  0 ,28,31,28,31,28,31,28,31,28,31,28,31,28
 };
 int cowAnimDataLen = sizeof(pCowAnimData) / sizeof(int);
 
@@ -59,6 +59,8 @@ gfmRV cow_init(gfmParser *pParser) {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setVerticalAcceleration(pGlobal->pCow, GRAV);
     ASSERT(rv == GFMRV_OK, rv);
+
+    pGlobal->cowHitstun = 0;
 
     rv = GFMRV_OK;
 __ret:
@@ -94,6 +96,9 @@ gfmRV cow_update() {
             pGlobal->grassCounter = 0;
         }
     }
+    if (pGlobal->cowHitstun > 0) {
+        pGlobal->cowHitstun  -= pGame->elapsed;
+    }
 
 
     /* Shoot and update bullets */
@@ -116,7 +121,7 @@ gfmRV cow_update() {
             vx = -BUL_VX;
         }
 
-        rv = particle_recycle(pGlobal->pParticles, T_BULLET, x, y, BUL_W, BUL_H,
+        rv = particle_recycle(pGlobal->pBullets, T_BULLET, x, y, BUL_W, BUL_H,
                 BUL_OX, BUL_OY, vx);
         ASSERT(rv == GFMRV_OK, rv);
 
@@ -201,9 +206,10 @@ gfmRV cow_update() {
             }
         }
     }
-    if (pGlobal->cowAnim == COW_EAT &&
-            gfmSprite_didAnimationFinish(pGlobal->pCow) == GFMRV_TRUE) {
-        pGlobal->cowAnim = -1;
+    if (gfmSprite_didAnimationFinish(pGlobal->pCow) == GFMRV_TRUE) {
+        if (pGlobal->cowAnim == COW_EAT || pGlobal->cowAnim == COW_HIT) {
+            pGlobal->cowAnim = -1;
+        }
     }
 
     rv = GFMRV_OK;
@@ -221,7 +227,10 @@ gfmRV cow_postUpdate() {
     rv = gfmSprite_getVelocity(&vx, &vy, pGlobal->pCow);
     ASSERT(rv == GFMRV_OK, rv);
 
-    if (vy < 0) {
+    if (pGlobal->cowHitstun > 0) {
+        /* Filter any other animation */
+    }
+    else if (vy < 0) {
         rv = gfmSprite_playAnimation(pGlobal->pCow, COW_JUMP);
         ASSERT(rv == GFMRV_OK, rv);
         pGlobal->cowAnim = COW_JUMP;
@@ -231,14 +240,8 @@ gfmRV cow_postUpdate() {
         ASSERT(rv == GFMRV_OK, rv);
         pGlobal->cowAnim = COW_FALL;
     }
-    /* TODO HIT */
     else if (pGlobal->cowAnim == COW_EAT || !(dir & gfmCollision_down)) {
         /* Filter any other animation */
-    }
-    else if (vx != 0) {
-        rv = gfmSprite_playAnimation(pGlobal->pCow, COW_RUN);
-        ASSERT(rv == GFMRV_OK, rv);
-        pGlobal->cowAnim = COW_RUN;
     }
     else if (pGlobal->grassCounter < GRASS_MAX && pGlobal->laserTime <= 0 &&
             (pButton->act.state & gfmInput_justPressed) ==
@@ -246,6 +249,11 @@ gfmRV cow_postUpdate() {
         rv = gfmSprite_playAnimation(pGlobal->pCow, COW_EAT);
         ASSERT(rv == GFMRV_OK, rv);
         pGlobal->cowAnim = COW_EAT;
+    }
+    else if (vx != 0) {
+        rv = gfmSprite_playAnimation(pGlobal->pCow, COW_RUN);
+        ASSERT(rv == GFMRV_OK, rv);
+        pGlobal->cowAnim = COW_RUN;
     }
     else if (pGlobal->laserTime > 0) {
         /* Force non-animated stand if shooting */
@@ -273,6 +281,44 @@ __ret:
 }
 
 gfmRV cow_draw() {
-    return gfmGroup_draw(pGlobal->pGrass, pGame->pCtx);
+    gfmRV rv;
+    int frame;
+
+    if (pGlobal->laserTime > 0 && pGlobal->cowAnim != COW_HIT) {
+        rv = gfmSprite_getFrame(&frame, pGlobal->pCow);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setFrame(pGlobal->pCow, frame | 1);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
+    rv = gfmSprite_draw(pGlobal->pCow, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    if (pGlobal->laserTime > 0 && pGlobal->cowAnim != COW_HIT) {
+        rv = gfmSprite_setFrame(pGlobal->pCow, frame);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
+}
+
+gfmRV cow_hit() {
+    gfmRV rv;
+
+    if (pGlobal->cowHitstun > 0) {
+        return GFMRV_OK;
+    }
+
+    pGlobal->hearts--;
+    pGlobal->cowHitstun += COW_HITSTUN;
+    pGlobal->cowAnim = COW_HIT;
+    rv = gfmSprite_playAnimation(pGlobal->pCow, COW_HIT);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
 }
 

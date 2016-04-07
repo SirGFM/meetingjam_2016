@@ -34,6 +34,8 @@ struct stAlien {
     gfmObject *pView;
     int anim;
     int timer;
+    /** Relative position; 0 = away, 1 = right, -1 = left */
+    int cowRelativePos;
 };
 
 gfmRV alien_getNew(alien **ppCtx) {
@@ -49,6 +51,7 @@ gfmRV alien_getNew(alien **ppCtx) {
     rv = gfmObject_getNew(&(pCtx->pView));
     ASSERT(rv == GFMRV_OK, rv);
 
+    *ppCtx = pCtx;
     rv = GFMRV_OK;
 __ret:
     return rv;
@@ -74,7 +77,7 @@ gfmRV alien_init(gfmParser *pParser) {
 
     rv = gfmParser_getPos(&x, &y, pParser);
     ASSERT(rv == GFMRV_OK, rv);
-    y -= 16;
+    y -= 14;
     rv = gfmSprite_init(pAlien->pSelf, x, y, 4/*w*/, 12/*h*/, pGfx->pSset8x16,
             -2/*ox*/, -2/*oy*/, pAlien, T_ALIEN);
     ASSERT(rv == GFMRV_OK, rv);
@@ -88,6 +91,10 @@ gfmRV alien_init(gfmParser *pParser) {
     rv = gfmObject_init(pAlien->pView, x, y, 24, 10, pAlien, T_ALIENV);
     ASSERT(rv == GFMRV_OK, rv);
 
+    pAlien->anim = -1;
+    pAlien->timer = 0;
+    pAlien->cowRelativePos = 0;
+
     gfmGenArr_push(pGlobal->pAliens);
     rv = GFMRV_OK;
 __ret:
@@ -97,6 +104,10 @@ __ret:
 static gfmRV _alien_update(alien *pAlien) {
     gfmRV rv;
     int flipped, x, y;
+
+    if (pAlien->timer > 0) {
+        pAlien->timer -= pGame->elapsed;
+    }
 
     rv = gfmSprite_update(pAlien->pSelf, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
@@ -146,8 +157,43 @@ __ret:
 static gfmRV _alien_postUpdate(alien *pAlien) {
     gfmRV rv;
 
-    /* TODO Update AI */
-    /* TODO Update animation */
+    /* Update AI */
+    if (pAlien->anim != ALIEN_HIT && pAlien->timer <= 0) {
+        int vx;
+
+        if (pAlien->cowRelativePos == 1) {
+            rv = gfmSprite_setDirection(pAlien->pSelf, 1/*flipped*/);
+            ASSERT(rv == GFMRV_OK, rv);
+
+            vx = ALIEN_VX;
+        }
+        else if (pAlien->cowRelativePos == -1) {
+            rv = gfmSprite_setDirection(pAlien->pSelf, 0/*flipped*/);
+            ASSERT(rv == GFMRV_OK, rv);
+
+            vx = -ALIEN_VX;
+        }
+        else {
+            vx = 0;
+        }
+
+        rv = gfmSprite_setHorizontalVelocity(pAlien->pSelf, vx);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        if (vx != 0 && pAlien->anim != ALIEN_RUN) {
+            pAlien->anim = ALIEN_RUN;
+            rv = gfmSprite_playAnimation(pAlien->pSelf, ALIEN_RUN);
+            ASSERT(rv == GFMRV_OK, rv);
+        }
+        else if(vx == 0 && pAlien->anim != ALIEN_STAND) {
+            pAlien->anim = ALIEN_STAND;
+            rv = gfmSprite_playAnimation(pAlien->pSelf, ALIEN_STAND);
+            ASSERT(rv == GFMRV_OK, rv);
+        }
+    }
+    else {
+        pAlien->timer -= pGame->elapsed;
+    }
 
     rv = GFMRV_OK;
 __ret:
@@ -170,6 +216,27 @@ gfmRV alien_draw() {
     gfmRV rv;
 
     gfmGenArr_callAllRV(pGlobal->pAliens, _alien_draw);
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
+}
+
+void alien_pursueDir(alien *pAlien, int goLeft) {
+    if (goLeft) {
+        pAlien->cowRelativePos = -1;
+    }
+    else {
+        pAlien->cowRelativePos = 1;
+    }
+}
+
+gfmRV alien_hit(alien *pAlien) {
+    gfmRV rv;
+
+    pAlien->anim = ALIEN_HIT;
+    rv = gfmSprite_playAnimation(pAlien->pSelf, ALIEN_HIT);
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
