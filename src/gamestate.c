@@ -58,9 +58,10 @@ gfmRV game_init() {
 
     rv = gfmCamera_setWorldDimensions(pGame->pCam, MAP_W, MAP_H);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmCamera_setDeadzone(pGame->pCam, CAM_DEAD_X0, 0/*y*/, CAM_DEAD_X1,
+    rv = gfmCamera_setDeadzone(pGame->pCam, CAM_L_DZ_X0, 0/*y*/, CAM_DZ_W,
             MAP_H);
     ASSERT(rv == GFMRV_OK, rv);
+    pGlobal->camState = CAM_STATE_LEFT;
 
     /*FLOOR*/
     rv = gfmSprite_init(pGlobal->pFloor, FLOOR_X, FLOOR_Y, MAP_W, MAP_H,
@@ -164,6 +165,22 @@ gfmRV game_update() {
     rv = gfmSprite_getCenter(&cx, &cy, pGlobal->pCow);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmCamera_centerAtPoint(pGame->pCam, cx, cy);
+    if (rv == GFMRV_CAMERA_MOVED) {
+        if (pGlobal->camState == CAM_STATE_LEFT &&
+                cx > pGame->camX + V_WIDTH / 2) {
+            /* TODO Change to CAM_STATE_RIGHT */
+        }
+        else if (pGlobal->camState == CAM_STATE_RIGHT &&
+                cx < pGame->camX + V_WIDTH / 2) {
+            /* TODO Change to CAM_STATE_LEFT */
+        }
+
+        /* Gradually change the camera to the desired position */
+        if (pGlobal->camState == CAM_STATE_CHANGE_LEFT) {
+        }
+        else if (pGlobal->camState == CAM_STATE_CHANGE_RIGHT) {
+        }
+    }
 
     rv = particle_spawnScene();
     ASSERT(rv == GFMRV_OK, rv);

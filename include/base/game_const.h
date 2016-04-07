@@ -116,9 +116,6 @@
 #define BUL_VX 32
 #define BUL_COOLDOWN 66
 
-#define CAM_DEAD_X0 24
-#define CAM_DEAD_X1 16
-
 #define UI_GRASS_BAR_Y 53
 #define UI_GRASS_BAR_FRAME0 64
 #define UI_HEART_X0 40
@@ -154,6 +151,21 @@
 
 #define ALIEN_VX 20
 #define ALIEN_COOLDOWN 2000
+
+#define CAM_DEAD_X0 24
+#define CAM_DEAD_X1 16
+
+/** The deadzone starts 12px from the border and is 14 pixels wide */
+#define CAM_DZ_W 14
+#define CAM_L_DZ_X0 12
+#define CAM_L_DZ_X1 (CAM_L_DZ_X0 + CAM_DZ_W)
+#define CAM_R_DZ_X0 38
+#define CAM_R_DZ_X1 (CAM_R_DZ_X0 + CAM_DZ_W)
+
+#define CAM_STATE_RIGHT 0
+#define CAM_STATE_LEFT 1
+#define CAM_STATE_CHANGE_LEFT 2
+#define CAM_STATE_CHANGE_RIGHT 3
 
 #endif /* __GAME_CONST_H__ */
 
