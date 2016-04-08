@@ -222,6 +222,7 @@ struct stGlobalCtx {
     int starTime;
     int cowHitstun;
     int camState;
+    int camXdead;
 };
 
 #endif /* __GAME_CTX_H__ */
