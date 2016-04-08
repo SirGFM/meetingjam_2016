@@ -248,6 +248,11 @@ int main(int argc, char *argv[]) {
     pGame->flags |= GAME_RUN;
 #endif
 
+    rv = gfm_playAudio(0, pGame->pCtx, pAudio->song, 0.8);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfm_resetFPS(pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+
     /* Initialize the main loop */
     rv = main_loop();
     ASSERT(rv == GFMRV_OK, rv);
