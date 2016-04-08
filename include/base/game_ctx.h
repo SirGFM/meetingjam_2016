@@ -139,6 +139,8 @@ struct stGfxCtx {
 /** Store all handles to songs and sound effects */
 struct stAudioCtx {
     int song;
+    int jump;
+    int fall;
     /* TODO Add any song/sfx here */
 };
 
@@ -165,6 +167,7 @@ struct stButtonCtx {
     button dbgPause;
     /** Update a single frame and pause */
     button dbgStep;
+    button gif;
 #endif
     button left;
     button right;

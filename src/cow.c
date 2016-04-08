@@ -69,7 +69,7 @@ __ret:
 
 gfmRV cow_update() {
     gfmRV rv;
-    gfmCollision dir;
+    gfmCollision dir, lastDir;
     int cx, cy;
 
     /* Start shooting bullets */
@@ -132,6 +132,8 @@ gfmRV cow_update() {
     }
 
     /* Movement */
+    rv = gfmSprite_getLastCollision(&lastDir, pGlobal->pCow);
+    ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_getCollision(&dir, pGlobal->pCow);
     ASSERT(rv == GFMRV_OK, rv);
     /* JUMP */
@@ -139,6 +141,12 @@ gfmRV cow_update() {
             (pButton->jump.state & gfmInput_justPressed) ==
             gfmInput_justPressed) {
         rv = gfmSprite_setVerticalVelocity(pGlobal->pCow, COW_JUMPVY);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfm_playAudio(0, pGame->pCtx, pAudio->jump, 0.6);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    if ((dir & gfmCollision_down) && !(lastDir & gfmCollision_down)) {
+        rv = gfm_playAudio(0, pGame->pCtx, pAudio->fall, 0.6);
         ASSERT(rv == GFMRV_OK, rv);
     }
     /* WALK */
