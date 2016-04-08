@@ -255,6 +255,22 @@ gfmRV game_draw() {
         i++;
     }
 
+    x = 0;
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, x, 0/*y*/, '/'-'!', 0/*flip*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    x += 8;
+    rv = gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, x, 0/*y*/,
+            pGlobal->alienCount.cur, 2/*res*/,  0/*firstTile*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    x = V_WIDTH - 3*8;
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, x, 1/*y*/, 256/*tile*/,
+            0/*flip*/);
+    ASSERT(rv == GFMRV_OK, rv);
+    x += 8;
+    rv = gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, x, 0/*y*/,
+            pGlobal->grassCount.cur, 2/*res*/,  0/*firstTile*/);
+    ASSERT(rv == GFMRV_OK, rv);
+
     rv = GFMRV_OK;
 __ret:
     return rv;
