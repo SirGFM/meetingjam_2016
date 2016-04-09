@@ -217,7 +217,6 @@ struct stGlobalCtx {
     gfmGroup *pBullets;
     gfmGroup *pGrass;
     gfmObject *pEatHitbox;
-    char *pFile;
     gfmGenArr_var(alien, pAliens);
     struct counter grassCount;
     struct counter alienCount;

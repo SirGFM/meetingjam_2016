@@ -78,7 +78,7 @@ gfmRV alien_init(gfmParser *pParser) {
     rv = gfmParser_getPos(&x, &y, pParser);
     ASSERT(rv == GFMRV_OK, rv);
     y -= 12;
-    rv = gfmSprite_init(pAlien->pSelf, x, y, 2/*w*/, 10/*h*/, pGfx->pSset8x16,
+    rv = gfmSprite_init(pAlien->pSelf, x, y, ALIEN_W, 10/*h*/, pGfx->pSset8x16,
             -3/*ox*/, -4/*oy*/, pAlien, T_ALIEN);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_addAnimations(pAlien->pSelf, pAlienAnimData,
@@ -126,6 +126,17 @@ static gfmRV _alien_update(alien *pAlien) {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmObject_update(pAlien->pView, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+
+    rv = gfmSprite_getHorizontalPosition(&x, pAlien->pSelf);
+    ASSERT(rv == GFMRV_OK, rv);
+    if (x < 0) {
+        rv = gfmSprite_setHorizontalPosition(pAlien->pSelf, 0);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    else if (x + ALIEN_W > MAP_W) {
+        rv = gfmSprite_setHorizontalPosition(pAlien->pSelf, MAP_W - ALIEN_W);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
 
     rv = gfmQuadtree_collideSprite(pGlobal->pQt, pAlien->pSelf);
     ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);

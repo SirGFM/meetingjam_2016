@@ -166,6 +166,7 @@ gfmRV input_init() {
 #endif
     BIND_KEY(enter, gfmKey_return);
     BIND_KEY(down, gfmKey_down);
+    BIND_KEY(down, gfmKey_s);
     BIND_KEY(left, gfmKey_left);
     BIND_KEY(left, gfmKey_a);
     BIND_GAMEPAD_BT(left, gfmController_left, 0/*port*/);

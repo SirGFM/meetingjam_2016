@@ -70,7 +70,7 @@ __ret:
 gfmRV cow_update() {
     gfmRV rv;
     gfmCollision dir, lastDir;
-    int cx, cy;
+    int cx, cy, x;
 
     /* Start shooting bullets */
     if (pGlobal->grassCounter >= GRASS_MAX &&
@@ -171,6 +171,17 @@ gfmRV cow_update() {
     ASSERT(rv == GFMRV_OK, rv);
     if (pGlobal->hearts <= 0) {
         return GFMRV_OK;
+    }
+
+    rv = gfmSprite_getHorizontalPosition(&x, pGlobal->pCow);
+    ASSERT(rv == GFMRV_OK, rv);
+    if (x < 0) {
+        rv = gfmSprite_setHorizontalPosition(pGlobal->pCow, 0);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    else if (x + COW_W > MAP_W) {
+        rv = gfmSprite_setHorizontalPosition(pGlobal->pCow, MAP_W - COW_W);
+        ASSERT(rv == GFMRV_OK, rv);
     }
 
     rv = gfmQuadtree_collideSprite(pGlobal->pQt, pGlobal->pCow);

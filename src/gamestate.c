@@ -16,11 +16,6 @@
 #include <jam/particle.h>
 #include <jam/type.h>
 
-#include <string.h>
-
-int MAP_W = 1000;
-int MAP_H = 64;
-
 static gfmRV init_grass(gfmParser *pParser) {
     gfmRV rv;
     int x, y;
@@ -47,8 +42,7 @@ gfmRV game_init() {
     pParser = 0;
     rv = gfmParser_getNew(&pParser);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmParser_init(pParser, pGame->pCtx, pGlobal->pFile,
-            strlen(pGlobal->pFile));
+    rv = gfmParser_initStatic(pParser, pGame->pCtx, "maps/map.gfm");
     ASSERT(rv == GFMRV_OK, rv);
 
     pGlobal->hearts = UI_NUM_HEARTS;
@@ -97,12 +91,24 @@ gfmRV game_init() {
             rv = cow_init(pParser);
             ASSERT(rv == GFMRV_OK, rv);
         }
-        else if (!strcmp(pType, "grass")) {
+        else if (!strcmp(pType, "grass") ||
+                (!strcmp(pType, "grass-easy") &&
+                    pGlobal->menuState <= MENU_EASY) ||
+                (!strcmp(pType, "grass-normal") &&
+                     pGlobal->menuState <= MENU_NORMAL) ||
+                (!strcmp(pType, "grass-hard") &&
+                     pGlobal->menuState <= MENU_HARD)) {
             rv = init_grass(pParser);
             ASSERT(rv == GFMRV_OK, rv);
             pGlobal->grassCount.total++;
         }
-        else if (!strcmp(pType, "alien")) {
+        else if (!strcmp(pType, "alien") ||
+                (!strcmp(pType, "alien-easy") &&
+                    pGlobal->menuState >= MENU_EASY) ||
+                (!strcmp(pType, "alien-normal") &&
+                     pGlobal->menuState >= MENU_NORMAL) ||
+                (!strcmp(pType, "alien-hard") &&
+                     pGlobal->menuState >= MENU_HARD)) {
             rv = alien_init(pParser);
             ASSERT(rv == GFMRV_OK, rv);
             pGlobal->alienCount.total++;
