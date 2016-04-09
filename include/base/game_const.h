@@ -157,10 +157,10 @@
 #define CAM_DEAD_X1 16
 
 /** The deadzone starts 12px from the border and is 14 pixels wide */
-#define CAM_DZ_W 12
-#define CAM_L_DZ_X0 10
+#define CAM_DZ_W 6
+#define CAM_L_DZ_X0 8
 #define CAM_L_DZ_X1 (CAM_L_DZ_X0 + CAM_DZ_W)
-#define CAM_R_DZ_X0 44
+#define CAM_R_DZ_X0 50
 #define CAM_R_DZ_X1 (CAM_R_DZ_X0 + CAM_DZ_W)
 
 #define CAM_STATE_RIGHT 0

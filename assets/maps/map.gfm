@@ -30,3 +30,5 @@ obj grass 528 51 8 8
 obj grass 536 51 8 8
 obj grass 552 51 8 8
 obj grass 568 51 8 8
+obj alien-hard 48 50 8 16
+obj alien-normal 56 50 8 16

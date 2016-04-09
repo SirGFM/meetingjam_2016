@@ -70,6 +70,7 @@ gfmRV game_init() {
     rv = gfmGroup_killAll(pGlobal->pBullets);
     ASSERT(rv == GFMRV_OK, rv);
 
+    pGlobal->grassCounter = 0;
     pGlobal->grassCount.total = 0;
     pGlobal->alienCount.total = 0;
 
@@ -174,32 +175,36 @@ gfmRV game_update() {
     if (pGlobal->camState == CAM_STATE_CHANGE_RIGHT ||
             pGlobal->camState == CAM_STATE_CHANGE_LEFT) {
         if (pGlobal->camState == CAM_STATE_CHANGE_RIGHT) {
-            if (pGlobal->camXdead == CAM_R_DZ_X0) {
+            if (pGlobal->camXdead >= CAM_R_DZ_X0) {
+                pGlobal->camXdead = CAM_R_DZ_X0;
                 pGlobal->camState = CAM_STATE_RIGHT;
             }
             else {
-                pGlobal->camXdead++;
+                pGlobal->camXdead += 2;
             }
         }
         else if (pGlobal->camState == CAM_STATE_CHANGE_LEFT) {
             if (pGlobal->camXdead == CAM_L_DZ_X0) {
+                pGlobal->camXdead = CAM_L_DZ_X0;
                 pGlobal->camState = CAM_STATE_LEFT;
             }
             else {
-                pGlobal->camXdead--;
+                pGlobal->camXdead -= 2;
             }
         }
         rv = gfmCamera_setDeadzone(pGame->pCam, pGlobal->camXdead, 0/*y*/,
                 CAM_DZ_W, MAP_H);
         ASSERT(rv == GFMRV_OK, rv);
     }
-    else if (rv == GFMRV_CAMERA_MOVED) {
-        if (pGlobal->camState == CAM_STATE_LEFT &&
-                cx < pGame->camX + V_WIDTH  * 1 / 4) {
+    else {
+        double vx;
+
+        rv = gfmSprite_getHorizontalVelocity(&vx, pGlobal->pCow);
+        ASSERT(rv == GFMRV_OK, rv);
+        if (vx < 0) {
             pGlobal->camState  = CAM_STATE_CHANGE_RIGHT;
         }
-        else if (pGlobal->camState == CAM_STATE_RIGHT &&
-                cx > pGame->camX + V_WIDTH * 3 / 4) {
+        else if (vx > 0) {
             pGlobal->camState  = CAM_STATE_CHANGE_LEFT;
         }
     }
