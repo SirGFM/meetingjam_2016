@@ -52,8 +52,6 @@ gfmRV game_init() {
     rv = gfmCamera_setDeadzone(pGame->pCam, 28, 0/*y*/, 4,
             MAP_H);
     ASSERT(rv == GFMRV_OK, rv);
-    //pGlobal->camState = CAM_STATE_LEFT;
-    //pGlobal->camXdead = CAM_L_DZ_X0;
 
     /*FLOOR*/
     rv = gfmSprite_init(pGlobal->pFloor, FLOOR_X, FLOOR_Y, MAP_W, MAP_H,
@@ -171,45 +169,7 @@ gfmRV game_update() {
 
     rv = gfmSprite_getCenter(&cx, &cy, pGlobal->pCow);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmCamera_centerAtPoint(pGame->pCam, cx, cy);
-#if 0
-    if (pGlobal->camState == CAM_STATE_CHANGE_RIGHT ||
-            pGlobal->camState == CAM_STATE_CHANGE_LEFT) {
-        if (pGlobal->camState == CAM_STATE_CHANGE_RIGHT) {
-            if (pGlobal->camXdead >= CAM_R_DZ_X0) {
-                pGlobal->camXdead = CAM_R_DZ_X0;
-                pGlobal->camState = CAM_STATE_RIGHT;
-            }
-            else {
-                pGlobal->camXdead += 2;
-            }
-        }
-        else if (pGlobal->camState == CAM_STATE_CHANGE_LEFT) {
-            if (pGlobal->camXdead == CAM_L_DZ_X0) {
-                pGlobal->camXdead = CAM_L_DZ_X0;
-                pGlobal->camState = CAM_STATE_LEFT;
-            }
-            else {
-                pGlobal->camXdead -= 2;
-            }
-        }
-        rv = gfmCamera_setDeadzone(pGame->pCam, pGlobal->camXdead, 0/*y*/,
-                CAM_DZ_W, MAP_H);
-        ASSERT(rv == GFMRV_OK, rv);
-    }
-    else {
-        double vx;
-
-        rv = gfmSprite_getHorizontalVelocity(&vx, pGlobal->pCow);
-        ASSERT(rv == GFMRV_OK, rv);
-        if (vx < 0) {
-            pGlobal->camState  = CAM_STATE_CHANGE_RIGHT;
-        }
-        else if (vx > 0) {
-            pGlobal->camState  = CAM_STATE_CHANGE_LEFT;
-        }
-    }
-#endif
+    gfmCamera_centerAtPoint(pGame->pCam, cx, cy);
 
     if (pGlobal->winState != WIN_NOT_SET) {
         rv = gfmText_update(pGlobal->pText, pGame->pCtx);

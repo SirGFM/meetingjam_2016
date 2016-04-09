@@ -227,8 +227,6 @@ struct stGlobalCtx {
     int hearts;
     int starTime;
     int cowHitstun;
-    int camState;
-    int camXdead;
     int winState;
     int resetCount;
     int menuState;
