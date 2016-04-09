@@ -41,6 +41,12 @@ gfmRV assets_load() {
     LOAD_SFX(song, "song/song.mml");
     LOAD_SFX(jump, "sfx/Jump.wav");
     LOAD_SFX(fall, "sfx/Fall.wav");
+    LOAD_SFX(cowHit, "sfx/CowHit.wav");
+    LOAD_SFX(alienHit, "sfx/AlienHit.wav");
+    LOAD_SFX(menu, "sfx/Menu.wav");
+    LOAD_SFX(enterGame, "sfx/EnterGame.wav");
+    LOAD_SFX(cowStep, "sfx/CowStep.wav");
+    LOAD_SFX(alienStep, "sfx/AlienStep.wav");
     //LOAD_SFX(, "sfx/.wav");
 
     rv = GFMRV_OK;

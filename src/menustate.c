@@ -53,6 +53,8 @@ gfmRV menu_update() {
             if (pGlobal->menuState == MENU_MAX) {
                 pGlobal->menuState = 0;
             }
+            rv = gfm_playAudio(0, pGame->pCtx, pAudio->menu, 0.6);
+            ASSERT(rv == GFMRV_OK, rv);
         }
         else if ((pButton->jump.state & gfmInput_justPressed) ==
                 gfmInput_justPressed){
@@ -61,12 +63,16 @@ gfmRV menu_update() {
             if (pGlobal->menuState == MENU_MAX) {
                 pGlobal->menuState--;
             }
+            rv = gfm_playAudio(0, pGame->pCtx, pAudio->menu, 0.6);
+            ASSERT(rv == GFMRV_OK, rv);
         }
         else if ((pButton->act.state & gfmInput_justPressed) ==
                 gfmInput_justPressed ||
                 (pButton->enter.state & gfmInput_justPressed) ==
                 gfmInput_justPressed){
             pGame->nextState = ST_GAMESTATE;
+            rv = gfm_playAudio(0, pGame->pCtx, pAudio->enterGame, 0.6);
+            ASSERT(rv == GFMRV_OK, rv);
         }
     }
 

@@ -80,6 +80,7 @@
 #define COW_VX 26
 #define COW_JUMPVY -160
 #define COW_EAT_FRAME 27
+#define COW_STEP_FRAME 24
 #define COW_EAT_W 8
 #define COW_EAT_H 8
 #define COW_EAT_OX 2
@@ -152,6 +153,8 @@
 #define ALIEN_W 2
 #define ALIEN_VX 20
 #define ALIEN_COOLDOWN 2000
+#define ALIEN_STEP_FRAME1 69
+#define ALIEN_STEP_FRAME2 71
 
 #define CAM_DEAD_X0 24
 #define CAM_DEAD_X1 16

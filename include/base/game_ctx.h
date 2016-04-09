@@ -142,6 +142,12 @@ struct stAudioCtx {
     int song;
     int jump;
     int fall;
+    int cowHit;
+    int alienHit;
+    int menu;
+    int enterGame;
+    int cowStep;
+    int alienStep;
     /* TODO Add any song/sfx here */
 };
 

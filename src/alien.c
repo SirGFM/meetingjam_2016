@@ -229,6 +229,19 @@ static gfmRV _alien_postUpdate(alien *pAlien) {
         pAlien->timer -= pGame->elapsed;
     }
 
+    if (gfmSprite_didAnimationJustChangeFrame(pAlien->pSelf) == GFMRV_TRUE) {
+        int frame;
+
+        rv = gfmSprite_getFrame(&frame, pAlien->pSelf);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        if ((frame == ALIEN_STEP_FRAME1 || frame == ALIEN_STEP_FRAME2) &&
+            gfmCamera_isSpriteInside(pGame->pCam, pAlien->pSelf) == GFMRV_TRUE) {
+                rv = gfm_playAudio(0, pGame->pCtx, pAudio->alienStep, 0.35);
+                ASSERT(rv == GFMRV_OK, rv);
+        }
+    }
+
     rv = GFMRV_OK;
 __ret:
     return rv;
@@ -275,6 +288,9 @@ gfmRV alien_hit(alien *pAlien) {
     if (pAlien->anim == ALIEN_HIT) {
         return GFMRV_OK;
     }
+
+    rv = gfm_playAudio(0, pGame->pCtx, pAudio->alienHit, 0.8);
+    ASSERT(rv == GFMRV_OK, rv);
 
     pAlien->anim = ALIEN_HIT;
     rv = gfmSprite_playAnimation(pAlien->pSelf, ALIEN_HIT);

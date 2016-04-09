@@ -221,6 +221,10 @@ gfmRV cow_update() {
                 rv = collision_run();
                 ASSERT(rv == GFMRV_OK, rv);
             }
+        } /* if (frame == COW_EAT_FRAME) */
+        else if (frame == COW_STEP_FRAME || frame == (COW_STEP_FRAME | 1)) {
+            rv = gfm_playAudio(0, pGame->pCtx, pAudio->cowStep, 0.6);
+            ASSERT(rv == GFMRV_OK, rv);
         }
     }
     if (gfmSprite_didAnimationFinish(pGlobal->pCow) == GFMRV_TRUE) {
@@ -327,6 +331,9 @@ gfmRV cow_hit() {
     if (pGlobal->cowHitstun > 0) {
         return GFMRV_OK;
     }
+
+    rv = gfm_playAudio(0, pGame->pCtx, pAudio->cowHit, 0.8);
+    ASSERT(rv == GFMRV_OK, rv);
 
     pGlobal->hearts--;
     pGlobal->cowHitstun += COW_HITSTUN;
