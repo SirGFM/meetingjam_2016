@@ -49,11 +49,11 @@ gfmRV game_init() {
 
     rv = gfmCamera_setWorldDimensions(pGame->pCam, MAP_W, MAP_H);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmCamera_setDeadzone(pGame->pCam, CAM_L_DZ_X0, 0/*y*/, CAM_DZ_W,
+    rv = gfmCamera_setDeadzone(pGame->pCam, 28, 0/*y*/, 4,
             MAP_H);
     ASSERT(rv == GFMRV_OK, rv);
-    pGlobal->camState = CAM_STATE_LEFT;
-    pGlobal->camXdead = CAM_L_DZ_X0;
+    //pGlobal->camState = CAM_STATE_LEFT;
+    //pGlobal->camXdead = CAM_L_DZ_X0;
 
     /*FLOOR*/
     rv = gfmSprite_init(pGlobal->pFloor, FLOOR_X, FLOOR_Y, MAP_W, MAP_H,
@@ -172,6 +172,7 @@ gfmRV game_update() {
     rv = gfmSprite_getCenter(&cx, &cy, pGlobal->pCow);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmCamera_centerAtPoint(pGame->pCam, cx, cy);
+#if 0
     if (pGlobal->camState == CAM_STATE_CHANGE_RIGHT ||
             pGlobal->camState == CAM_STATE_CHANGE_LEFT) {
         if (pGlobal->camState == CAM_STATE_CHANGE_RIGHT) {
@@ -208,6 +209,7 @@ gfmRV game_update() {
             pGlobal->camState  = CAM_STATE_CHANGE_LEFT;
         }
     }
+#endif
 
     if (pGlobal->winState != WIN_NOT_SET) {
         rv = gfmText_update(pGlobal->pText, pGame->pCtx);

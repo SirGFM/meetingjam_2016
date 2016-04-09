@@ -70,15 +70,15 @@
 
 #define COW_X 4
 #define COW_Y 4
-#define COW_W 10
+#define COW_W 8
 #define COW_H 9
 #define COW_OX -3
 #define COW_OY -5
 #define GRAV 500
 #define MAP_W 608
 #define MAP_H 64
-#define COW_VX 24
-#define COW_JUMPVY -150
+#define COW_VX 26
+#define COW_JUMPVY -160
 #define COW_EAT_FRAME 27
 #define COW_EAT_W 8
 #define COW_EAT_H 8
