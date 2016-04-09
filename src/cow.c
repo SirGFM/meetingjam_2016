@@ -174,6 +174,9 @@ gfmRV cow_update() {
     /* Update and collide */
     rv = gfmSprite_update(pGlobal->pCow, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+    if (pGlobal->hearts <= 0) {
+        return GFMRV_OK;
+    }
 
     rv = gfmQuadtree_collideSprite(pGlobal->pQt, pGlobal->pCow);
     ASSERT(rv == GFMRV_QUADTREE_OVERLAPED || rv == GFMRV_QUADTREE_DONE, rv);

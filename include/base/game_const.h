@@ -167,5 +167,15 @@
 #define CAM_STATE_CHANGE_LEFT 2
 #define CAM_STATE_CHANGE_RIGHT 3
 
+#define WIN_NOT_SET 0
+#define WIN_STATE 1
+#define LOSE_STATE 2
+#define RESET_COUNT 3
+
+#define MENU_EASY 0
+#define MENU_NORMAL 1
+#define MENU_HARD 2
+#define MENU_MAX 3
+
 #endif /* __GAME_CONST_H__ */
 

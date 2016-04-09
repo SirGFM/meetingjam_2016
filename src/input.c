@@ -140,6 +140,8 @@ gfmRV input_init() {
     ADD_KEY(dbgPause);
     ADD_KEY(dbgStep);
 #endif
+    ADD_KEY(enter);
+    ADD_KEY(down);
     ADD_KEY(left);
     ADD_KEY(right);
     ADD_KEY(jump);
@@ -162,6 +164,8 @@ gfmRV input_init() {
     BIND_KEY(dbgPause, gfmKey_f5);
     BIND_KEY(dbgStep, gfmKey_f6);
 #endif
+    BIND_KEY(enter, gfmKey_return);
+    BIND_KEY(down, gfmKey_down);
     BIND_KEY(left, gfmKey_left);
     BIND_KEY(left, gfmKey_a);
     BIND_GAMEPAD_BT(left, gfmController_left, 0/*port*/);

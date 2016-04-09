@@ -14,6 +14,7 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gframe.h>
 
+#include <jam/menustate.h>
 #include <jam/gamestate.h>
 
 /** Required by malloc() and free() */
@@ -38,9 +39,11 @@ gfmRV main_loop() {
         if (pGame->nextState != 0) {
             /* Init the current state, if switching */
             switch (pGame->nextState) {
-                case ST_GAMESTATE: game_init(); break;
+                case ST_MENUSTATE: rv = menu_init(); break;
+                case ST_GAMESTATE: rv = game_init(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
+            ASSERT(rv == GFMRV_OK, rv);
 
             pGame->curState = pGame->nextState;
             pGame->nextState = ST_NONE;
@@ -94,7 +97,8 @@ gfmRV main_loop() {
 
             /* Update the current state */
             switch (pGame->curState) {
-                case ST_GAMESTATE: game_update(); break;
+                case ST_MENUSTATE: rv = menu_update(); break;
+                case ST_GAMESTATE: rv = game_update(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
             ASSERT(rv == GFMRV_OK, rv);
@@ -112,7 +116,8 @@ gfmRV main_loop() {
 
             /* Render the current state */
             switch (pGame->curState) {
-                case ST_GAMESTATE: game_draw(); break;
+                case ST_MENUSTATE: rv = menu_draw(); break;
+                case ST_GAMESTATE: rv = game_draw(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
             ASSERT(rv == GFMRV_OK, rv);
@@ -131,6 +136,7 @@ gfmRV main_loop() {
         if (pGame->nextState != ST_NONE) {
             /* Clear the current state, if switching */
             switch (pGame->curState) {
+                case ST_MENUSTATE: menu_clean(); break;
                 case ST_GAMESTATE: game_clean(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
@@ -207,6 +213,11 @@ int main(int argc, char *argv[]) {
     }
     ASSERT(rv == GFMRV_OK, rv);
 
+#if defined(DEBUG)
+    rv = gfm_disableAudio(pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+#endif
+
     /* Initialize the audio */
     rv = gfm_initAudio(pGame->pCtx, pConfig->audioQuality);
     ASSERT(rv == GFMRV_OK, rv);
@@ -242,7 +253,7 @@ int main(int argc, char *argv[]) {
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Set the initial state */
-    pGame->nextState = ST_GAMESTATE;
+    pGame->nextState = ST_MENUSTATE;
     /* Set debug mode to running instead of stepping */
 #if defined(DEBUG)
     pGame->flags |= GAME_RUN;

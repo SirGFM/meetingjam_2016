@@ -15,6 +15,7 @@
 #include <GFraMe/gfmQuadtree.h>
 #include <GFraMe/gfmSprite.h>
 #include <GFraMe/gfmSpriteset.h>
+#include <GFraMe/gfmText.h>
 #include <GFraMe/core/gfmAudio_bkend.h>
 
 #include <jam/alien.h>
@@ -169,6 +170,8 @@ struct stButtonCtx {
     button dbgStep;
     button gif;
 #endif
+    button enter;
+    button down;
     button left;
     button right;
     button jump;
@@ -206,6 +209,7 @@ gfmGenArr_define(alien);
 /** Store game-related variables that should be globally accessible */
 struct stGlobalCtx {
     /** The quadtree for collision */
+    gfmText *pText;
     gfmQuadtreeRoot *pQt;
     gfmSprite *pFloor;
     gfmSprite *pCow;
@@ -227,6 +231,9 @@ struct stGlobalCtx {
     int cowHitstun;
     int camState;
     int camXdead;
+    int winState;
+    int resetCount;
+    int menuState;
 };
 
 #endif /* __GAME_CTX_H__ */

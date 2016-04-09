@@ -8,6 +8,7 @@
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmParser.h>
+#include <GFraMe/gfmText.h>
 
 #include <jam/alien.h>
 #include <jam/cow.h>
@@ -74,15 +75,7 @@ gfmRV game_init() {
     ASSERT(rv == GFMRV_OK, rv);
 
     /*PARTICLES*/
-    rv = particle_initGroup(pGlobal->pParticles, T_CLOUD, 4/*w*/, 4/*h*/,
-            PART_TTL);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = particle_initGroup(pGlobal->pBullets, T_CLOUD, 4/*w*/, 4/*h*/,
-            PART_TTL);
-    ASSERT(rv == GFMRV_OK, rv);
-
-    rv = particle_initGroup(pGlobal->pGrass, T_GRASS, 4/*w*/, 4/*h*/,
-            -1/*ttl*/);
+    rv = gfmGroup_killAll(pGlobal->pGrass);
     ASSERT(rv == GFMRV_OK, rv);
 
     pGlobal->grassCount.total = 0;
@@ -122,6 +115,14 @@ gfmRV game_init() {
 
     pGlobal->grassCount.cur = pGlobal->grassCount.total;
     pGlobal->alienCount.cur = pGlobal->alienCount.total;
+    pGlobal->winState = WIN_NOT_SET;
+
+    pGlobal->resetCount = 0;
+
+    rv = gfmText_init(pGlobal->pText, 0/*x*/, 16/*y*/, 1 + V_WIDTH/8/*width*/,
+            1/*maxLines*/, 300/*delay*/, 0/*bind to camera*/, pGfx->pSset8x8,
+            0/*first tile*/);
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
@@ -199,6 +200,41 @@ gfmRV game_update() {
         }
     }
 
+    if (pGlobal->winState != WIN_NOT_SET) {
+        rv = gfmText_update(pGlobal->pText, pGame->pCtx);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        if (gfmText_didFinish(pGlobal->pText) == GFMRV_TRUE) {
+            if (pGlobal->resetCount >= RESET_COUNT) {
+                pGame->nextState = ST_MENUSTATE;
+            }
+            else if (pGlobal->winState == WIN_STATE) {
+                rv = gfmText_setTextStatic(pGlobal->pText, " COW WIN ",
+                        1/*doCopy*/);
+                ASSERT(rv == GFMRV_OK, rv);
+            }
+            else if (pGlobal->winState == LOSE_STATE) {
+                rv = gfmText_setTextStatic(pGlobal->pText, "ALIEN W. ",
+                        1/*doCopy*/);
+                ASSERT(rv == GFMRV_OK, rv);
+            }
+            pGlobal->resetCount++;
+        }
+    }
+    else if (pGlobal->alienCount.cur == 0) {
+        pGlobal->winState = WIN_STATE;
+
+        rv = gfmText_setTextStatic(pGlobal->pText, " COW WIN ", 1/*doCopy*/);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    else if (pGlobal->hearts == 0 || (pGlobal->grassCount.cur == 0 &&
+            pGlobal->grassCounter < GRASS_MAX && pGlobal->laserTime <= 0)) {
+        pGlobal->winState = LOSE_STATE;
+
+        rv = gfmText_setTextStatic(pGlobal->pText, "ALIEN W. ", 1/*doCopy*/);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
     rv = particle_spawnScene();
     ASSERT(rv == GFMRV_OK, rv);
 
@@ -270,6 +306,11 @@ gfmRV game_draw() {
     rv = gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, x, 0/*y*/,
             pGlobal->grassCount.cur, 2/*res*/,  0/*firstTile*/);
     ASSERT(rv == GFMRV_OK, rv);
+
+    if (pGlobal->winState != WIN_NOT_SET) {
+        rv = gfmText_draw(pGlobal->pText, pGame->pCtx);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
 
     rv = GFMRV_OK;
 __ret:
