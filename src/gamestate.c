@@ -67,6 +67,8 @@ gfmRV game_init() {
     /*PARTICLES*/
     rv = gfmGroup_killAll(pGlobal->pGrass);
     ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_killAll(pGlobal->pBullets);
+    ASSERT(rv == GFMRV_OK, rv);
 
     pGlobal->grassCount.total = 0;
     pGlobal->alienCount.total = 0;
