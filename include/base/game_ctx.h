@@ -224,7 +224,6 @@ struct stGlobalCtx {
     int grassCounter;
     int laserTime;
     int cloudTime;
-    int cooldown;
     int cowAnim;
     int hearts;
     int starTime;

@@ -15,6 +15,12 @@
 
 #include <stdlib.h>
 
+int pBulletAnimData[] = {
+        /*len|fps|loop|data */
+/*EXPLODE*/ 6, 12,  0 ,BUL_FRAME,BUL_FRAME+1,BUL_FRAME+2,BUL_FRAME+3,BUL_FRAME+4,BUL_FRAME+5,
+};
+int bulletAnimDataLen = sizeof(pBulletAnimData) / sizeof(int);
+
 gfmRV particle_initGroup(gfmGroup *pGroup, mjType type, int w, int h, int ttl) {
     gfmRV rv;
 
@@ -32,8 +38,14 @@ gfmRV particle_initGroup(gfmGroup *pGroup, mjType type, int w, int h, int ttl) {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_setDeathOnTime(pGroup, ttl);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_preCache(pGroup, PART_CACHE, PART_CACHE);
-    ASSERT(rv == GFMRV_OK, rv);
+    if (type == T_BULLET) {
+        rv = gfmGroup_preCache(pGroup, PART_CACHE, PART_CACHE);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    else {
+        rv = gfmGroup_preCache(pGroup, PART_CACHE * 4, PART_CACHE * 4);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
     rv = gfmGroup_setDrawOrder(pGroup, gfmDrawOrder_oldestFirst);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_setCollisionQuality(pGroup, gfmCollisionQuality_visibleOnly);
@@ -80,6 +92,12 @@ gfmRV particle_recycle(gfmGroup *pGroup, mjType type, int x, int y, int w,
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_init(pSpr, x, y, w, h, pSset, ox, oy, 0, type);
     ASSERT(rv == GFMRV_OK, rv);
+
+    if (type == T_BULLET) {
+        rv = gfmSprite_addAnimations(pSpr, pBulletAnimData, bulletAnimDataLen);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
     rv = gfmSprite_setFrame(pSpr, frame);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setFixed(pSpr);

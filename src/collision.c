@@ -172,8 +172,12 @@ gfmRV collision_run() {
                 rv = alien_hit(pAlien);
                 ASSERT(rv == GFMRV_OK, rv);
 
-                /* TODO Explode bullet */
-                /* TODO Move it slightly upward */
+                /* Explode bullet */
+                rv = gfmSprite_playAnimation(pBullet, 0);
+                ASSERT(rv == GFMRV_OK, rv);
+                /* Move it slightly upward */
+                rv = gfmSprite_setVerticalVelocity(pBullet, -16);
+                ASSERT(rv == GFMRV_OK, rv);
             } break;
             COL_TYPES(T_ALIENV, T_COW) {
                 gfmObject *pOther, *pSelf;

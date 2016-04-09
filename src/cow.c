@@ -102,7 +102,7 @@ gfmRV cow_update() {
 
 
     /* Shoot and update bullets */
-    if (pGlobal->laserTime > 0  && pGlobal->cooldown <= 0 &&
+    if (pGlobal->laserTime > 0  &&
                 (pButton->act.state & gfmInput_pressed)) {
         int flipped, vx, x, y;
 
@@ -124,11 +124,6 @@ gfmRV cow_update() {
         rv = particle_recycle(pGlobal->pBullets, T_BULLET, x, y, BUL_W, BUL_H,
                 BUL_OX, BUL_OY, vx);
         ASSERT(rv == GFMRV_OK, rv);
-
-        pGlobal->cooldown += BUL_COOLDOWN;
-    }
-    if (pGlobal->cooldown > 0) {
-        pGlobal->cooldown -= pGame->elapsed;
     }
 
     /* Movement */
