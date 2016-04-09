@@ -61,6 +61,10 @@ gfmRV cow_init(gfmParser *pParser) {
     ASSERT(rv == GFMRV_OK, rv);
 
     pGlobal->cowHitstun = 0;
+#if 0
+    pGlobal->pLaserAud = 0;
+#endif
+    pGlobal->laserAudTime = 0;
 
     rv = GFMRV_OK;
 __ret:
@@ -124,7 +128,27 @@ gfmRV cow_update() {
         rv = particle_recycle(pGlobal->pBullets, T_BULLET, x, y, BUL_W, BUL_H,
                 BUL_OX, BUL_OY, vx);
         ASSERT(rv == GFMRV_OK, rv);
+
+#if 0
+        if ((pButton->act.state & gfmInput_justPressed) ==
+                gfmInput_justPressed || (!pGlobal->pLaserAud ||
+                gfmAudio_didHandleFinish(pGame->pCtx, pGlobal->pLaserAud) ==
+                    GFMRV_TRUE)) {
+            pGlobal->pLaserAud = 0;
+
+            rv = gfm_playAudio(&(pGlobal->pLaserAud), pGame->pCtx, pAudio->laser, 0.35);
+            ASSERT(rv == GFMRV_OK, rv);
+        }
+#else
+        if ((pButton->act.state & gfmInput_justPressed) ==
+                gfmInput_justPressed || (pGlobal->laserAudTime > 500)) {
+            rv = gfm_playAudio(0, pGame->pCtx, pAudio->laser, 0.35);
+            ASSERT(rv == GFMRV_OK, rv);
+            pGlobal->laserAudTime -= 500;
+        }
+#endif
     }
+    pGlobal->laserAudTime += pGame->elapsed;
 
     /* Movement */
     rv = gfmSprite_getLastCollision(&lastDir, pGlobal->pCow);

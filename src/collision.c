@@ -148,6 +148,8 @@ gfmRV collision_run() {
                     frame++;
                     rv = gfmSprite_setFrame(pGrass, frame);
                     ASSERT(rv == GFMRV_OK, rv);
+                    rv = gfm_playAudio(0, pGame->pCtx, pAudio->eat, 0.6);
+                    ASSERT(rv == GFMRV_OK, rv);
                 }
                 rv = GFMRV_OK;
             } break;

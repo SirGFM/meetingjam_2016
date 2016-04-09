@@ -47,7 +47,8 @@ gfmRV assets_load() {
     LOAD_SFX(enterGame, "sfx/EnterGame.wav");
     LOAD_SFX(cowStep, "sfx/CowStep.wav");
     LOAD_SFX(alienStep, "sfx/AlienStep.wav");
-    //LOAD_SFX(, "sfx/.wav");
+    LOAD_SFX(eat, "sfx/Eat.wav");
+    LOAD_SFX(laser, "sfx/Laser.wav");
 
     rv = GFMRV_OK;
 __ret:

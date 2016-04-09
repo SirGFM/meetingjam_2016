@@ -148,7 +148,8 @@ struct stAudioCtx {
     int enterGame;
     int cowStep;
     int alienStep;
-    /* TODO Add any song/sfx here */
+    int eat;
+    int laser;
 };
 
 /** Simple button definition, so it's easier to update and access each button */
@@ -214,8 +215,11 @@ struct counter {
 gfmGenArr_define(alien);
 /** Store game-related variables that should be globally accessible */
 struct stGlobalCtx {
-    /** The quadtree for collision */
+#if 0
+    gfmAudioHandle *pLaserAud;
+#endif
     gfmText *pText;
+    /** The quadtree for collision */
     gfmQuadtreeRoot *pQt;
     gfmSprite *pFloor;
     gfmSprite *pCow;
@@ -236,6 +240,7 @@ struct stGlobalCtx {
     int winState;
     int resetCount;
     int menuState;
+    int laserAudTime;;
 };
 
 #endif /* __GAME_CTX_H__ */
