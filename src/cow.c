@@ -141,14 +141,16 @@ gfmRV cow_update() {
         }
 #else
         if ((pButton->act.state & gfmInput_justPressed) ==
-                gfmInput_justPressed || (pGlobal->laserAudTime > 500)) {
+                gfmInput_justPressed || (pGlobal->laserAudTime <= 0)) {
             rv = gfm_playAudio(0, pGame->pCtx, pAudio->laser, 0.35);
             ASSERT(rv == GFMRV_OK, rv);
-            pGlobal->laserAudTime -= 500;
+            pGlobal->laserAudTime += 500;
         }
 #endif
     }
-    pGlobal->laserAudTime += pGame->elapsed;
+    if (pGlobal->laserAudTime > 0) {
+        pGlobal->laserAudTime -= pGame->elapsed;
+    }
 
     /* Movement */
     rv = gfmSprite_getLastCollision(&lastDir, pGlobal->pCow);
