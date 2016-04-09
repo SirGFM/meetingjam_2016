@@ -55,11 +55,18 @@ gfmRV menu_update() {
                 pGlobal->menuState--;
             }
         }
-        else if ((pButton->jump.state & gfmInput_justPressed) ==
+        else if ((pButton->act.state & gfmInput_justPressed) ==
                 gfmInput_justPressed ||
                 (pButton->enter.state & gfmInput_justPressed) ==
                 gfmInput_justPressed){
             pGame->nextState = ST_GAMESTATE;
+
+            switch (pGlobal->menuState) {
+                case MENU_EASY: pGlobal->pFile = "maps/map_easy.gfm"; break;
+                case MENU_NORMAL: pGlobal->pFile = "maps/map_normal.gfm"; break;
+                case MENU_HARD: pGlobal->pFile = "maps/map_hard.gfm"; break;
+                default: pGlobal->pFile = "maps/map_normal.gfm";
+            }
         }
     }
 
