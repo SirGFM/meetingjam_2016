@@ -15,7 +15,10 @@
 #include <GFraMe/gfmQuadtree.h>
 #include <GFraMe/gfmSprite.h>
 #include <GFraMe/gfmSpriteset.h>
+#include <GFraMe/gfmText.h>
 #include <GFraMe/core/gfmAudio_bkend.h>
+
+#include <jam/alien.h>
 
 /* == Types declaration ===================================================== */
 
@@ -136,7 +139,17 @@ struct stGfxCtx {
 
 /** Store all handles to songs and sound effects */
 struct stAudioCtx {
-    /* TODO Add any song/sfx here */
+    int song;
+    int jump;
+    int fall;
+    int cowHit;
+    int alienHit;
+    int menu;
+    int enterGame;
+    int cowStep;
+    int alienStep;
+    int eat;
+    int laser;
 };
 
 /** Simple button definition, so it's easier to update and access each button */
@@ -162,7 +175,10 @@ struct stButtonCtx {
     button dbgPause;
     /** Update a single frame and pause */
     button dbgStep;
+    button gif;
 #endif
+    button enter;
+    button down;
     button left;
     button right;
     button jump;
@@ -189,7 +205,6 @@ struct stConfigCtx {
     int fps;
     /** Audio quality (frequency, bits per samples and number of channels) */
     gfmAudioQuality audioQuality;
-    /* TODO Add button mapping */
 };
 
 struct counter {
@@ -197,27 +212,35 @@ struct counter {
     int cur;
 };
 
-gfmGenArr_define(gfmSprite);
+gfmGenArr_define(alien);
 /** Store game-related variables that should be globally accessible */
 struct stGlobalCtx {
+#if 0
+    gfmAudioHandle *pLaserAud;
+#endif
+    gfmText *pText;
     /** The quadtree for collision */
     gfmQuadtreeRoot *pQt;
     gfmSprite *pFloor;
     gfmSprite *pCow;
     gfmGroup *pParticles;
+    gfmGroup *pBullets;
     gfmGroup *pGrass;
     gfmObject *pEatHitbox;
-    char *pFile;
-    gfmGenArr_var(gfmSprite, pAliens);
+    gfmGenArr_var(alien, pAliens);
     struct counter grassCount;
     struct counter alienCount;
     int grassCounter;
     int laserTime;
     int cloudTime;
-    int cooldown;
     int cowAnim;
     int hearts;
     int starTime;
+    int cowHitstun;
+    int winState;
+    int resetCount;
+    int menuState;
+    int laserAudTime;;
 };
 
 #endif /* __GAME_CTX_H__ */

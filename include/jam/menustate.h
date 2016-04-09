@@ -7,9 +7,9 @@
 #include <GFraMe/gfmError.h>
 
 gfmRV menu_init();
-gfmRV menu_clean();
 gfmRV menu_update();
 gfmRV menu_draw();
+void menu_clean();
 
 #endif /* __MENUSTATE_H__ */
 

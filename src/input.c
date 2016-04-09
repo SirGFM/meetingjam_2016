@@ -49,7 +49,6 @@ gfmRV input_updateButtons() {
             ASSERT(rv == GFMRV_OK, rv);
         }
         pConfig->flags ^= CFG_FULLSCREEN;
-        /* TODO Save the new state of the game's window */
     }
 #if defined(DEBUG)
     /* Switch quadtree visibility */
@@ -61,12 +60,18 @@ gfmRV input_updateButtons() {
             pGame->flags |= DBG_RENDERQT;
         }
     }
+    /* Start recording a GIF */
+    if ((pButton->gif.state & gfmInput_justReleased) == gfmInput_justReleased) {
+        rv = gfm_didExportGif(pGame->pCtx);
+        if (rv == GFMRV_TRUE || rv == GFMRV_GIF_OPERATION_NOT_ACTIVE) {
+            rv = gfm_recordGif(pGame->pCtx, 10000 /* ms */, "anim.gif", 8, 0);
+            ASSERT(rv == GFMRV_OK, rv);
+        }
+    }
     /* Update the 'manual stepper' */
     rv = input_updateDebugButtons();
     ASSERT(rv == GFMRV_OK, rv);
 #endif
-
-    /* TODO Add actions that should be triggered as soon as key are pressed */
 
     rv = GFMRV_OK;
 __ret:
@@ -130,10 +135,13 @@ gfmRV input_init() {
 
     ADD_KEY(fullscreen);
 #if defined(DEBUG)
+    ADD_KEY(gif);
     ADD_KEY(qt);
     ADD_KEY(dbgPause);
     ADD_KEY(dbgStep);
 #endif
+    ADD_KEY(enter);
+    ADD_KEY(down);
     ADD_KEY(left);
     ADD_KEY(right);
     ADD_KEY(jump);
@@ -151,10 +159,14 @@ gfmRV input_init() {
 
     BIND_KEY(fullscreen, gfmKey_f12);
 #if defined(DEBUG)
+    BIND_KEY(gif, gfmKey_f10);
     BIND_KEY(qt, gfmKey_f11);
     BIND_KEY(dbgPause, gfmKey_f5);
     BIND_KEY(dbgStep, gfmKey_f6);
 #endif
+    BIND_KEY(enter, gfmKey_return);
+    BIND_KEY(down, gfmKey_down);
+    BIND_KEY(down, gfmKey_s);
     BIND_KEY(left, gfmKey_left);
     BIND_KEY(left, gfmKey_a);
     BIND_GAMEPAD_BT(left, gfmController_left, 0/*port*/);

@@ -38,6 +38,18 @@ gfmRV assets_load() {
     GEN_SPRITESET(32, 16, pGfx->texHandle);
     GEN_SPRITESET(64, 16, pGfx->texHandle);
 
+    LOAD_SFX(song, "song/song.mml");
+    LOAD_SFX(jump, "sfx/Jump.wav");
+    LOAD_SFX(fall, "sfx/Fall.wav");
+    LOAD_SFX(cowHit, "sfx/CowHit.wav");
+    LOAD_SFX(alienHit, "sfx/AlienHit.wav");
+    LOAD_SFX(menu, "sfx/Menu.wav");
+    LOAD_SFX(enterGame, "sfx/EnterGame.wav");
+    LOAD_SFX(cowStep, "sfx/CowStep.wav");
+    LOAD_SFX(alienStep, "sfx/AlienStep.wav");
+    LOAD_SFX(eat, "sfx/Eat.wav");
+    LOAD_SFX(laser, "sfx/Laser.wav");
+
     rv = GFMRV_OK;
 __ret:
     return rv;

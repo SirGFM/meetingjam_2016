@@ -3,12 +3,16 @@
  *
  * Declare all global variables
  */
+#include <base/game_const.h>
 #include <base/game_ctx.h>
 #include <base/global.h>
 
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmQuadtree.h>
+
+#include <jam/alien.h>
+#include <jam/particle.h>
 
 /** Store data related to game */
 gameCtx *pGame = 0;
@@ -68,7 +72,21 @@ gfmRV global_initUserVar() {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_getNew(&(pGlobal->pParticles));
     ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_getNew(&(pGlobal->pBullets));
+    ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_getNew(&(pGlobal->pGrass));
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmText_getNew(&(pGlobal->pText));
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = particle_initGroup(pGlobal->pParticles, T_CLOUD, 4/*w*/, 4/*h*/,
+            PART_TTL);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = particle_initGroup(pGlobal->pBullets, T_CLOUD, 4/*w*/, 4/*h*/,
+            PART_TTL);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = particle_initGroup(pGlobal->pGrass, T_GRASS, 4/*w*/, 4/*h*/,
+            -1/*ttl*/);
     ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
@@ -95,9 +113,15 @@ void global_freeUserVar() {
     if (pGlobal->pGrass) {
         gfmGroup_free(&(pGlobal->pGrass));
     }
+    if (pGlobal->pBullets) {
+        gfmGroup_free(&(pGlobal->pBullets));
+    }
     if (pGlobal->pParticles) {
         gfmGroup_free(&(pGlobal->pParticles));
     }
-    gfmGenArr_clean(pGlobal->pAliens, gfmSprite_free);
+    if (pGlobal->pText) {
+        gfmText_free(&(pGlobal->pText));
+    }
+    gfmGenArr_clean(pGlobal->pAliens, alien_free);
 }
 

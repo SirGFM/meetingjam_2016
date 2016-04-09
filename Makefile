@@ -3,13 +3,17 @@
 # Define every object required by compilation
 #=======================================================================
   OBJS =                        \
+          $(OBJDIR)/alien.o     \
           $(OBJDIR)/assets.o    \
+          $(OBJDIR)/cow.o       \
           $(OBJDIR)/collision.o \
           $(OBJDIR)/config.o    \
+          $(OBJDIR)/gamestate.o \
           $(OBJDIR)/global.o    \
           $(OBJDIR)/input.o     \
           $(OBJDIR)/main.o      \
-          $(OBJDIR)/menustate.o
+          $(OBJDIR)/menustate.o \
+          $(OBJDIR)/particle.o
 #=======================================================================
 
 #=======================================================================
